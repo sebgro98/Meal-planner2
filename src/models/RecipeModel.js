@@ -1,9 +1,10 @@
 import MealAPI from '../utils/MealAPI';
 
 class RecipeModel {
-    async getRecipes(query) {
+    async getRecipes() {
         // Fetch recipes using the MealAPI utility
-        const data = await MealAPI.getRecipes(query);
+        const data = await MealAPI.getRecipes();
+        console.log("HEllodsadsa", data)
         // You can add additional data manipulation here if needed
         return data;
     }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
-import {Button, TextInput, View} from "react-native";
+import {Button, TextInput, View, Text} from "react-native";
 
 const HomePageView = () => {
     const [recipes, setRecipes] = useState([]);

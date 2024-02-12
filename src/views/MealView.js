@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
-import {View} from "react-native";
+import {View, Text} from "react-native";
 
 const MealView = ({ route }) => {
     const [mealDetails, setMealDetails] = useState(null);

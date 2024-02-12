@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Picker, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
 

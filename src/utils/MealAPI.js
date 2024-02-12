@@ -1,18 +1,13 @@
 import axios from 'axios';
 
 const BASE_URL = 'https://api.spoonacular.com'; // Base URL for Spoonacular API
-const apiKey = 'b5382c0cbe344e83af45d0d6263814cb'; // Your API Key
+const apiKey = 'c195e435e05c4a2998db7ed737f2f208'; // Your API Key
 
 const MealAPI = {
     getRecipes: async (query) => {
         try {
-            const response = await axios.get(`${BASE_URL}/recipes/complexSearch`, {
-                params: {
-                    query: query,
-                    apiKey: apiKey // Include the API key in the request
-                }
-            });
-            return response.data;
+            const response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&number=10`);
+            console.log(response.data);
         } catch (error) {
             console.error('Error fetching recipes:', error);
             throw error;

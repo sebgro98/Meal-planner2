@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, FlatList, Image, StyleSheet, Button, TextInput} from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, Button, TextInput, TouchableOpacity } from 'react-native';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
 
@@ -11,11 +11,19 @@ const HomePageView = ({ navigation }) => {
         presenter.fetchData();
     }, []);
 
-    const renderRecipe = ({ item }) => (
+    const handleRecipePress = (item) => {
+        presenter.getMealDetails(item.id, navigation );// Navigate to a new screen or perform any action with the selected recipe information
+        console.log('Selected Recipe:', item);
+    };
 
+    const renderRecipe = ({ item }) => (
         <View style={styles.recipeItem}>
-            <Image source={{ uri: item.image }} style={styles.image} />
-            <Text style={styles.title}>{item.title}</Text>
+            <TouchableOpacity onPress={() => handleRecipePress(item)}>
+            <View>
+                <Image source={{ uri: item.image }} style={styles.image} />
+                    <Text style={styles.title}>{item.title}</Text>
+            </View>
+            </TouchableOpacity>
         </View>
     );
 
@@ -23,24 +31,18 @@ const HomePageView = ({ navigation }) => {
         <View style={styles.container}>
             <Text>Meal Planner</Text>
             <TextInput placeholder="Search for recipes..." />
-            {/* Implement a list or grid for categories */}
-            {/* Feature a recipe of the day or similar */}
-            {/* Navigation buttons to other views */}
             <Button
                 title="Go to Favorites"
                 onPress={() => navigation.navigate('Favorites')}
             />
-            {/* ... other navigation buttons */}
             {recipes.results && (
-
-                    <FlatList
-                        key={recipes.results.length} // Add a key prop based on data length
-                        data={recipes.results}
-                        renderItem={renderRecipe}
-                        keyExtractor={item => item.id.toString()}
-                        numColumns={2} // Set the number of columns to 2
-                    />
-
+                <FlatList
+                    key={recipes.results.length}
+                    data={recipes.results}
+                    renderItem={renderRecipe}
+                    keyExtractor={item => item.id.toString()}
+                    numColumns={2}
+                />
             )}
         </View>
     );
@@ -54,7 +56,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f2f2f2',
     },
     recipeItem: {
-        flexDirection: 'column', // Change to column for a better mobile display
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 10,
@@ -65,18 +67,18 @@ const styles = StyleSheet.create({
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
-        width: '48%', // Set a width to fit two cards in a row with some spacing
-        marginRight: '2%', // Add some margin between the cards
+        width: '48%',
+        marginRight: '2%',
     },
     image: {
         width: '100%',
-        height: 120, // Adjust the height as per your preference
+        height: 120,
         borderRadius: 8,
         marginBottom: 10,
     },
     title: {
         fontSize: 16,
-        fontWeight: 'bold', // Make the title bold
+        fontWeight: 'bold',
         textAlign: 'center',
     },
 });

@@ -3,7 +3,7 @@ import {View, Text, FlatList, Image, StyleSheet, Button, TextInput} from 'react-
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
 
-const HomePageView = () => {
+const HomePageView = ({ navigation }) => {
     const [recipes, setRecipes] = useState([]);
     const presenter = new HomePagePresenter(new RecipeModel(), { updateData: setRecipes });
 

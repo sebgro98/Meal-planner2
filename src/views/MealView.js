@@ -3,9 +3,13 @@ import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
 import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
 
-const MealView = ({ navigation }) => {
+const MealView = ({ route }) => {
     const [mealDetails, setMealDetails] = useState(null);
     const presenter = new HomePagePresenter(new RecipeModel());
+
+    const mealdet = route.params.mealDetails; // Get meal ID passed from previous screen
+    console.log('meal view', route.params);
+
 
     const meal = {
         name: 'Trump pizza',

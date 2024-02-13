@@ -2,7 +2,6 @@ import axios from 'axios';
 import { apiKey } from './apiConfig';
 const BASE_URL = 'https://api.spoonacular.com'; // Base URL for Spoonacular API
 
-
 const MealAPI = {
     getRecipes: async () => {
         try {

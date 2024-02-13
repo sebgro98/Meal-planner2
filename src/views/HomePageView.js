@@ -8,7 +8,7 @@ import {
     Button,
     TextInput,
     Modal,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback, TouchableOpacity
 } from 'react-native';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
@@ -25,7 +25,7 @@ const HomePageView = ({ navigation }) => {
     };
 
     useEffect(() => {
-        //presenter.fetchData();
+        presenter.fetchData();
     }, []);
 
     const handleApplyFilters = (selectedFilter) => {

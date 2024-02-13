@@ -3,7 +3,7 @@ import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
 import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
 
-const MealView = ({ navigation }) => {
+const MealView = ({ route }) => {
     const [mealDetails, setMealDetails] = useState(null);
     const presenter = new HomePagePresenter(new RecipeModel());
 

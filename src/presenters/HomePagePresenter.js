@@ -22,6 +22,7 @@ class HomePagePresenter {
         try {
             const filteredData = await this.model.getFilteredRecipes(filters);
             this.view.updateData(filteredData);
+            console.log("hello");
         } catch (error) {
             console.error('Error applying filters:', error);
         }

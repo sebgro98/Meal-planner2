@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const BASE_URL = 'https://api.spoonacular.com'; // Base URL for Spoonacular API
-const apiKey = 'c195e435e05c4a2998db7ed737f2f208'; // Your API Key
+import { apiKey } from './apiConfig';
 
 const MealAPI = {
     getRecipes: async () => {
@@ -28,6 +28,18 @@ const MealAPI = {
             throw error;
         }
     },
+
+    getIngredients: async (query) => {
+        try {
+            const response = await axios.get(`https://api.spoonacular.com/food/ingredients/search?query=${query}&number=15&apiKey=${apiKey}`);
+            console.log(response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching recipes:', error);
+            throw error;
+        }
+    },
+
 
     // Implement additional methods as needed, e.g., to fetch random recipes:
     getRandomRecipes: async () => {

@@ -29,6 +29,10 @@ const HomePageView = ({ navigation }) => {
                 title="Go to Favorites"
                 onPress={() => navigation.navigate('Favorites')}
             />
+            <Button
+                title="Go to Shopping List"
+                onPress={() => navigation.navigate('ShoppingList')}
+            />
             {/* ... other navigation buttons */}
             <FlatList
                 data={recipes.results}

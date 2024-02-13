@@ -31,6 +31,12 @@ class RecipeModel {
         // e.g., return MealAPI.getFavorites();
     }
 
+    async getIngredients(query){
+        const ingredients = await MealAPI.getIngredients(query);
+
+        return ingredients;
+    }
+
     async getMealDetails(mealId) {
         // Implement the logic to fetch detailed information about a specific meal
         // This could be an API call or retrieving data from a local store

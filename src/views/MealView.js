@@ -7,6 +7,10 @@ const MealView = ({ navigation }) => {
     const [mealDetails, setMealDetails] = useState(null);
     const presenter = new HomePagePresenter(new RecipeModel());
 
+    const mealdet = route.params.mealDetails; // Get meal ID passed from previous screen
+    console.log('meal view', route.params);
+
+
     const meal = {
         name: 'Trump pizza',
         image: 'trump.jpg',

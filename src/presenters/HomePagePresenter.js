@@ -39,6 +39,16 @@ class HomePagePresenter {
         // e.g., return this.model.getFavorites();
     }
 
+    async getIngredients(query){
+        try {
+            const data = await this.model.getIngredients(query);
+            return data;
+        } catch (error) {
+            console.error('Error getting shopping list:', error);
+            // Handle error
+        }
+    }
+
     async getMealDetails(mealId, navigation) {
         try {
             const mealDetails = await this.model.getMealDetails(mealId);

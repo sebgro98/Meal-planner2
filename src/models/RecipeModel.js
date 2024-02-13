@@ -16,9 +16,8 @@ class RecipeModel {
         return details;
     }
 
-    async getFilteredRecipes(filterCriteria) {
-        // Actual implementation to fetch recipes based on filters
-        // e.g., return MealAPI.fetchFilteredRecipes(filterCriteria);
+    async getFilteredRecipes(filters) {
+        return await MealAPI.getFilteredRecipes(filters);
     }
 
     async getShoppingList() {

@@ -17,10 +17,14 @@ class HomePagePresenter {
         }
     }
 
-    async getFilteredRecipes(filterCriteria) {
-        // Implement logic to fetch recipes based on the filter criteria
-        // This might involve calling a method on the model
-        // e.g., return this.model.getFilteredRecipes(filterCriteria);
+    async applyFilters(filters) {
+        try {
+            const filteredData = await this.model.getFilteredRecipes(filters);
+            this.view.updateData(filteredData);
+            console.log("hello");
+        } catch (error) {
+            console.error('Error applying filters:', error);
+        }
     }
 
     async getShoppingList() {

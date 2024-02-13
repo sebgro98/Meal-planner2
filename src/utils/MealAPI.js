@@ -1,12 +1,12 @@
 import axios from 'axios';
-
+import { apiKey } from './apiConfig';
 const BASE_URL = 'https://api.spoonacular.com'; // Base URL for Spoonacular API
 const apiKey = 'c195e435e05c4a2998db7ed737f2f208'; // Your API Key
 
 const MealAPI = {
     getRecipes: async () => {
         try {
-            const response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&number=50`);
+            const response = await axios.get(`${BASE_URL}/recipes/complexSearch?apiKey=${apiKey}&number=10`);
             console.log(response.data);
             return response.data;
         } catch (error) {
@@ -42,9 +42,19 @@ const MealAPI = {
             console.error('Error fetching random recipes:', error);
             throw error;
         }
-    }
+    },
 
-    // ... other methods ...
+    getFilteredRecipes: async (filters) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/recipes/complexSearch`, {
+                params: { ...filters, apiKey: apiKey }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching filtered recipes:', error);
+            throw error;
+        }
+    },
 };
 
 export default MealAPI;

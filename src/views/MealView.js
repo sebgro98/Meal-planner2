@@ -36,11 +36,6 @@ const MealView = ({ route }) => {
 
     return (
         <ScrollView style={styles.container}>
-            <TouchableOpacity  style={styles.header} onPress={() => navigation.navigate('Home')}>
-                <Text style={styles.headerText}>
-                    Go back
-                </Text>
-            </TouchableOpacity >
 
             <View style={styles.imageContainer}>
                 <Image source={require('../../assets/trump.jpg')} style={styles.mealImage} />

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
-import {View, Text} from "react-native";
+import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
 
 const MealView = ({ route }) => {
     const [mealDetails, setMealDetails] = useState(null);
     const presenter = new HomePagePresenter(new RecipeModel());
-    const { mealId } = route.params; // Get meal ID passed from previous screen
+    const mealdet = route.params.mealDetails; // Get meal ID passed from previous screen
+    console.log('meal view', route.params);
 
     useEffect(() => {
         const fetchMealDetails = async () => {

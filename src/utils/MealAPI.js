@@ -6,7 +6,7 @@ const apiKey = 'c195e435e05c4a2998db7ed737f2f208'; // Your API Key
 const MealAPI = {
     getRecipes: async () => {
         try {
-            const response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&number=10`);
+            const response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?apiKey=${apiKey}&number=50`);
             console.log(response.data);
             return response.data;
         } catch (error) {

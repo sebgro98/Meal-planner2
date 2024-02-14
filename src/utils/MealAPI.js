@@ -37,10 +37,9 @@ const MealAPI = {
             });
             return response.data;
         } catch (error) {
-            console.error('Error fetching recipe details:', error);
+            console.error('Error fetching nutrition details:', error);
             throw error;
         }
-;
     },
 
     getIngredients: async (query) => {

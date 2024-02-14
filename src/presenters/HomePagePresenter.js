@@ -70,7 +70,9 @@ class HomePagePresenter {
     }
 
     async loadShoppingList(){
-        return this.model.getShoppingList();
+        const temp = await this.model.getShoppingList();
+        console.log('Presenter', temp);
+        return temp;
     }
 
     async getMealDetailsWithID(mealId) {

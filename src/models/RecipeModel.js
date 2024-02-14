@@ -1,7 +1,7 @@
 import MealAPI from '../utils/MealAPI';
 
 class RecipeModel {
-    static shoppingList =[];
+    static shoppingList =[1];
     async getRecipes() {
         // Fetch recipes using the MealAPI utility
         const data = await MealAPI.getRecipes();
@@ -27,7 +27,9 @@ class RecipeModel {
 
     async getShoppingList() {
         // Fetch the shopping list
-        return this.shoppingList;
+        const temp = []
+        console.log('model', temp);
+        return await this.shoppingList;
     }
 
     async getFavorites() {

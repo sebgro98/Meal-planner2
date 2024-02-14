@@ -9,7 +9,7 @@ const ShoppingListView = () => {
     const [searchResults, setSearchResults] = useState([]);
     const presenter = new HomePagePresenter(new RecipeModel());
 
-    useEffect(() => {
+    /*useEffect(() => {
         const loadShoppingList = async () => {
             const temp = await presenter.loadShoppingList(); // Method to implement in presenter
             setShoppingList(temp);
@@ -17,7 +17,7 @@ const ShoppingListView = () => {
         };
 
         loadShoppingList();
-    }, []);
+    }, []);*/
 
     const fetchIngredients = async (query) => {
         try {

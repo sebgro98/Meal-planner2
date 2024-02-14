@@ -1,14 +1,24 @@
 import React, {useState } from 'react';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
-import {View, Text, Image, ScrollView, StyleSheet, Button} from 'react-native';
+import {
+    View,
+    Text,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Button,
+    TouchableWithoutFeedback,
+    Modal,
+    FlatList
+} from 'react-native';
 
 const MealView = ({ route }) => {
     const presenter = new HomePagePresenter(new RecipeModel());
     const [favoriteMeals, setFavoriteMeals] = useState([]);
+    const [isAddIngredientsVisible, setisAddIngredientsVisible] = useState(false);
 
     const mealDetails = route.params.mealDetails; // Get meal ID passed from previous screen
-    console.log('meal view', route.params);
 
     const addToFavorites = () => {
         // Check if the meal ID is already in the array
@@ -21,6 +31,10 @@ const MealView = ({ route }) => {
             console.log("Meal already in favorites");
         }
     };
+
+    function toggleAddIngredientsVisibility() {
+        setisAddIngredientsVisible(!isAddIngredientsVisible);
+    }
 
     return (
         <ScrollView style={styles.container}>
@@ -60,19 +74,49 @@ const MealView = ({ route }) => {
 
             <View style={styles.stepsContainer}>
                 <Text style={styles.detailsTitle}>Steps</Text>
-                <ScrollView>
-                    <Text style={styles.detailsText}>{mealDetails.instructions}</Text>
-                </ScrollView>
+                <Text style={styles.detailsText}>{mealDetails.instructions}</Text>
             </View>
 
-            <View style={styles.buttonContainer}>
-
+            <View style={styles.stepsContainer}>
                 <Button
                     title="Add to Favorites"
                     onPress={addToFavorites}
-                    color="#002e0c"
+                    color="white"
                 />
             </View>
+
+            <View style={styles.stepsContainer}>
+                <Button
+                    title="Add ingredients to shopping list"
+                    onPress={toggleAddIngredientsVisibility}
+                    color="white"
+                />
+            </View>
+
+            <Modal
+                visible={isAddIngredientsVisible}
+                onRequestClose={toggleAddIngredientsVisibility}
+                transparent={true}
+            >
+
+                <TouchableWithoutFeedback onPress={toggleAddIngredientsVisibility}>
+                    <View style={styles.addIngredientsOverlay} onClose={toggleAddIngredientsVisibility}>
+                        <TouchableWithoutFeedback>
+                            <View style={styles.addIngredientsContainer}>
+                                <FlatList
+                                    data={mealDetails.extendedIngredients}
+                                    renderItem={({ingredient}) => (
+                                        <Text style={styles.addIngredientsText}> {ingredient.name} Add</Text>
+                                    )}
+                                    keyExtractor={(ingredient) => ingredient.id}
+                                />
+                            </View>
+                        </TouchableWithoutFeedback>
+
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+
 
         </ScrollView>
     );
@@ -120,20 +164,19 @@ const styles = StyleSheet.create({
     detailsContainer: {
         flexDirection: 'row',
         margin: 10,
+        marginTop: 0,
     },
     ingredientsContainer: {
         flex: 1,
         backgroundColor: '#3dd944',
         borderRadius: 15,
         padding: 10,
-        marginBottom: 10,
     },
     nutritionContainer: {
         flex: 1,
         backgroundColor: '#3dd944',
         borderRadius: 15,
         padding: 10,
-        marginBottom: 10,
         marginLeft: 10,
     },
     stepsContainer: {
@@ -143,6 +186,7 @@ const styles = StyleSheet.create({
         padding: 10,
         marginLeft: 10,
         marginRight: 10,
+        marginBottom: 10,
     },
     detailsTitle: {
         color: '#fff',
@@ -158,6 +202,38 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         marginHorizontal: 20,
     },
+
+    addIngredientsOverlay: {
+        flex: 1,
+        textAlign: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+
+    addIngredientsContainer: {
+        marginTop: 120,
+        margin: 20,
+        backgroundColor: "white",
+        padding: 20,
+        borderRadius: 20,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+        width: '80%', // Adjust the width
+        height: 'auto', // Adjust the height
+        alignSelf: 'center',
+    },
+
+    addIngredientsText: {
+        fontSize: 20,
+    }
+
+
 });
 
 export default MealView;

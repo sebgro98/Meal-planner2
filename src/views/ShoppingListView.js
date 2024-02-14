@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, TextInput } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import { View, Text, FlatList, TextInput, Image } from 'react-native';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
 
@@ -27,7 +27,6 @@ const ShoppingListView = () => {
             // Call fetchIngredients to fetch data
             try {
                 await fetchIngredients(query); // Wait for fetchIngredients to complete
-                console.log('searchResults2', searchResults);
             } catch (error) {
                 console.error('Error fetching ingredients:', error);
                 // Handle error (e.g., display an error message to the user)
@@ -36,6 +35,10 @@ const ShoppingListView = () => {
             setSearchResults([]); // Clear search results if query is empty
         }
     };
+
+    useEffect(() => {
+        console.log('searchResults useeffect', searchResults);
+    }, [searchResults]); // Log searchResults whenever it changes
 
     return (
         <View>
@@ -47,12 +50,21 @@ const ShoppingListView = () => {
                 placeholder="Search"
             />
             <Text>Search Results</Text>
-            {searchResults && searchResults.length > 0 ? (
-            <FlatList
-                data={searchResults} // Use search results as data for FlatList
-                renderItem={({ item }) => <Text>{item.name()}</Text>}
-                keyExtractor={(item, index) => index.toString()}
-            />            ) : (
+            {searchResults && searchResults.results && searchResults.results.length > 0 ? (
+                <FlatList
+                    data={searchResults.results} // Use search results as data for FlatList
+                    renderItem={({ item }) => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Image
+                                source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }} // Form the complete image URL
+                                style={{ width: 50, height: 50, marginRight: 10 }} // Adjust the width and height as needed
+                            />
+                            <Text>{item.name}</Text>
+                        </View>
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            ) : (
                 <Text>Search List is empty</Text>
             )}
             <Text>Shopping List</Text>

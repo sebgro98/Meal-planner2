@@ -28,6 +28,16 @@ const MealAPI = {
         }
     },
 
+    getIngredients: async (query) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/food/ingredients/search?query=${query}&apiKey=${apiKey}&number=10`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching recipes:', error);
+            throw error;
+        }
+    },
+
     // Implement additional methods as needed, e.g., to fetch random recipes:
     getRandomRecipes: async () => {
         try {

@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import { View, Text, FlatList, TextInput, Image } from 'react-native';
+import { View, Text, FlatList, TextInput, Image, Button } from 'react-native';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
 
 const ShoppingListView = () => {
     const [shoppingList, setShoppingList] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState([]); // State for search results
+    const [searchResults, setSearchResults] = useState([]);
     const presenter = new HomePagePresenter(new RecipeModel());
 
     const fetchIngredients = async (query) => {
@@ -14,7 +14,6 @@ const ShoppingListView = () => {
             const data = await presenter.getIngredients(query);
             console.log('Testing', data);
             setSearchResults(data); // Update search results
-            console.log('searchResults', searchResults);
         } catch (error) {
             console.error('Error fetching ingredients:', error);
             // Handle error (e.g., display an error message to the user)
@@ -24,21 +23,25 @@ const ShoppingListView = () => {
     const handleSearch = async (query) => {
         setSearchQuery(query);
         if (query.trim() !== '') {
-            // Call fetchIngredients to fetch data
-            try {
-                await fetchIngredients(query); // Wait for fetchIngredients to complete
-            } catch (error) {
-                console.error('Error fetching ingredients:', error);
-                // Handle error (e.g., display an error message to the user)
-            }
+            await fetchIngredients(query);
         } else {
             setSearchResults([]); // Clear search results if query is empty
         }
     };
 
-    useEffect(() => {
-        console.log('searchResults useeffect', searchResults);
-    }, [searchResults]); // Log searchResults whenever it changes
+    const addToShoppingList = (ingredient) => {
+        // Check if the ingredient already exists in the shopping list
+        const exists = shoppingList.some(item => item.id === ingredient.id);
+
+        // If the ingredient does not exist, add it to the shopping list
+        if (!exists) {
+            setShoppingList(prevList => [...prevList, ingredient]);
+        }
+    };
+
+    const removeFromShoppingList = (ingredient) => {
+        setShoppingList(prevList => prevList.filter(item => item.id !== ingredient.id));
+    };
 
     return (
         <View>
@@ -49,6 +52,29 @@ const ShoppingListView = () => {
                 value={searchQuery}
                 placeholder="Search"
             />
+            <Text>Shopping List</Text>
+            {shoppingList && shoppingList.length > 0 ? (
+                <FlatList
+                    data={shoppingList}
+                    renderItem={({ item }) => (
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Image
+                                source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }}
+                                style={{ width: 50, height: 50, marginRight: 10 }}
+                            />
+                            <Text>{item.name}</Text>
+                            <Button
+                                title="Remove"
+                                onPress={() => removeFromShoppingList(item)} // Call removeFromShoppingList
+                            />
+                        </View>
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            ) : (
+                <Text>List is empty</Text>
+            )}
+
             <Text>Search Results</Text>
             {searchResults && searchResults.results && searchResults.results.length > 0 ? (
                 <FlatList
@@ -56,26 +82,20 @@ const ShoppingListView = () => {
                     renderItem={({ item }) => (
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image
-                                source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }} // Form the complete image URL
-                                style={{ width: 50, height: 50, marginRight: 10 }} // Adjust the width and height as needed
+                                source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }}
+                                style={{ width: 50, height: 50, marginRight: 10 }}
                             />
                             <Text>{item.name}</Text>
+                            <Button
+                                title="Add"
+                                onPress={() => addToShoppingList(item)}
+                            />
                         </View>
                     )}
                     keyExtractor={(item, index) => index.toString()}
                 />
             ) : (
                 <Text>Search List is empty</Text>
-            )}
-            <Text>Shopping List</Text>
-            {shoppingList && shoppingList.length > 0 ? (
-                <FlatList
-                    data={shoppingList}
-                    renderItem={({ item }) => <Text>{item.name}</Text>}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-            ) : (
-                <Text>Shopping List is empty</Text>
             )}
         </View>
     );

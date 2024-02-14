@@ -25,14 +25,9 @@ const HomePageView = ({ navigation }) => {
     };
 
     useEffect(() => {
-        presenter.fetchData();
+        //presenter.fetchData();
     }, []);
 
-    const handleApplyFilters = (selectedFilter) => {
-        // Logic to handle the application of filters
-        console.log("Applied Filters:", selectedFilter);
-        toggleFilterVisibility();
-    };
 
     const applyFilters = (filters) => {
         // Use the presenter to apply filters

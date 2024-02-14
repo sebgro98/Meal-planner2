@@ -28,6 +28,21 @@ const MealAPI = {
         }
     },
 
+    getRecipeNutrition: async (id) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/recipes/${id}/nutritionWidget.json`, {
+                params: {
+                    apiKey: apiKey
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching recipe details:', error);
+            throw error;
+        }
+;
+    },
+
     getIngredients: async (query) => {
         try {
             const response = await axios.get(`${BASE_URL}/food/ingredients/search?query=${query}&apiKey=${apiKey}&number=10`);

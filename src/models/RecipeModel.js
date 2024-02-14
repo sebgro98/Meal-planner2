@@ -41,6 +41,8 @@ class RecipeModel {
         // This could be an API call or retrieving data from a local store
         try {
             const mealDetails = await MealAPI.getRecipeDetails(mealId); // Assuming MealAPI has this method
+            const mealNutrition = await MealAPI.getRecipeNutrition(mealId);
+            Object.assign(mealDetails, mealNutrition);
             return mealDetails;
         } catch (error) {
             console.error('Error fetching meal details from API:', error);

@@ -48,10 +48,11 @@ const MealView = ({ route }) => {
                     <Text style={styles.detailsTitle}>Nutritional Information</Text>
                     <ScrollView>
                         <Text style={styles.detailsText}>Cook Time: {mealDetails.readyInMinutes} minutes</Text>
-                        <Text style={styles.detailsText}>Calories: {}</Text>
-                        <Text style={styles.detailsText}>Carbs: {}g</Text>
-                        <Text style={styles.detailsText}>Protein: {}g</Text>
-                        <Text style={styles.detailsText}>Fat: {}g</Text>
+                        <Text style={styles.detailsText}>Health score: {mealDetails.healthScore}/100</Text>
+                        <Text style={styles.detailsText}>Calories: {mealDetails.calories}</Text>
+                        <Text style={styles.detailsText}>Carbs: {mealDetails.carbs}</Text>
+                        <Text style={styles.detailsText}>Protein: {mealDetails.protein}</Text>
+                        <Text style={styles.detailsText}>Fat: {mealDetails.fat}</Text>
                         <Text style={styles.detailsText}>Portions: {mealDetails.servings}</Text>
                     </ScrollView>
                 </View>

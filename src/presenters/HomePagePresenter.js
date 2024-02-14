@@ -24,7 +24,7 @@ class HomePagePresenter {
             this.view.updateData(filteredData);
             console.log("hello");
         } catch (error) {
-            console.error('Error applying filters:', error);
+            console.error('Error applying filter:', error);
         }
     }
 

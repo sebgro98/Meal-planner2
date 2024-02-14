@@ -9,6 +9,16 @@ const ShoppingListView = () => {
     const [searchResults, setSearchResults] = useState([]);
     const presenter = new HomePagePresenter(new RecipeModel());
 
+    useEffect(() => {
+        const loadShoppingList = async () => {
+            const temp = await presenter.loadShoppingList(); // Method to implement in presenter
+            setShoppingList(temp);
+            console.log("shopping list", temp);
+        };
+
+        loadShoppingList();
+    }, []);
+
     const fetchIngredients = async (query) => {
         try {
             const data = await presenter.getIngredients(query);
@@ -36,11 +46,13 @@ const ShoppingListView = () => {
         // If the ingredient does not exist, add it to the shopping list
         if (!exists) {
             setShoppingList(prevList => [...prevList, ingredient]);
+            presenter.saveShoppingList(shoppingList);
         }
     };
 
     const removeFromShoppingList = (ingredient) => {
         setShoppingList(prevList => prevList.filter(item => item.id !== ingredient.id));
+        presenter.saveShoppingList(shoppingList);
     };
 
     return (

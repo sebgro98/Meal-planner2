@@ -64,6 +64,15 @@ class HomePagePresenter {
             // Handle error
         }
     }
+
+    async saveShoppingList(shoppingList){
+        await this.model.setShoppingList(shoppingList);
+    }
+
+    async loadShoppingList(){
+        return this.model.getShoppingList();
+    }
+
     async getMealDetailsWithID(mealId) {
         try {
             const mealDetails = await this.model.getMealDetails(mealId);

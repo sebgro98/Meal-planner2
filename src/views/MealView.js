@@ -1,14 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
-import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Button} from 'react-native';
 
 const MealView = ({ route }) => {
     const [mealDetails, setMealDetails] = useState(null);
     const presenter = new HomePagePresenter(new RecipeModel());
+    const [favoriteMeals, setFavoriteMeals] = useState([]);
 
     const mealdet = route.params.mealDetails; // Get meal ID passed from previous screen
     console.log('meal view', route.params);
+
+    const addToFavorites = () => {
+        // Check if the meal ID is already in the array
+        if (!HomePagePresenter.selectedMealIds.includes(mealdet.id)) {
+            // Update the array of favorite meal IDs
+            setFavoriteMeals((prevFavorites) => [...prevFavorites, mealdet.id]);
+            HomePagePresenter.selectedMealIds.push(mealdet.id);
+            console.log( HomePagePresenter.selectedMealIds);
+        } else {
+            console.log("Meal already in favorites");
+        }
+    };
 
 
     const meal = {
@@ -78,6 +91,16 @@ const MealView = ({ route }) => {
                     ))}
                 </ScrollView>
             </View>
+
+            <View style={styles.buttonContainer}>
+
+                <Button
+                    title="Add to Favorites"
+                    onPress={addToFavorites}
+                    color="#002e0c"
+                />
+            </View>
+
         </ScrollView>
     );
 };
@@ -157,6 +180,10 @@ const styles = StyleSheet.create({
     detailsText: {
         color: '#fff',
         marginBottom: 5,
+    },
+    buttonContainer: {
+        marginVertical: 10,
+        marginHorizontal: 20,
     },
 });
 

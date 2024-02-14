@@ -1,4 +1,5 @@
 class HomePagePresenter {
+    static selectedMealIds = [];
     constructor(model, view) {
         this.model = model;
         this.view = view;
@@ -34,9 +35,24 @@ class HomePagePresenter {
     }
 
     async getFavorites() {
-        // Implement logic to fetch favorite recipes
-        // This might be from local storage or an API call depending on your app's design
-        // e.g., return this.model.getFavorites();
+        try {
+            const favoriteMealDetails = [];
+
+            for (const mealId of HomePagePresenter.selectedMealIds) {
+                const mealDetails = await this.model.getMealDetails(mealId);
+                favoriteMealDetails.push(mealDetails);
+            }
+
+            console.log('Favorite Meal Details', favoriteMealDetails);
+
+            // If you want to navigate to a view with the favorite meal details, you can do it here
+            // this.navigateToFavoriteView(favoriteMealDetails, navigation);
+
+            return favoriteMealDetails;
+        } catch (error) {
+            console.error('Error fetching favorite meal details:', error);
+            throw error;
+        }
     }
 
     async getIngredients(query){
@@ -48,6 +64,17 @@ class HomePagePresenter {
             // Handle error
         }
     }
+    async getMealDetailsWithID(mealId) {
+        try {
+            const mealDetails = await this.model.getMealDetails(mealId);
+            console.log('Meal Details', mealDetails);
+            return mealDetails;
+        } catch (error) {
+            console.error('Error fetching meal details:', error);
+            throw error;
+        }
+    }
+
 
     async getMealDetails(mealId, navigation) {
         try {

@@ -41,18 +41,23 @@ const ShoppingListView = () => {
 
     const addToShoppingList = (ingredient) => {
         // Check if the ingredient already exists in the shopping list
-        const exists = shoppingList.some(item => item.id === ingredient.id);
+        const existingIndex = shoppingList.findIndex(item => item.id === ingredient.id);
 
-        // If the ingredient does not exist, add it to the shopping list
-        if (!exists) {
-            setShoppingList(prevList => [...prevList, ingredient]);
-            presenter.saveShoppingList(shoppingList);
+        // If the ingredient does not exist, add it to the shopping list with quantity 1
+        if (existingIndex === -1) {
+            setShoppingList(prevList => [...prevList, { ...ingredient, quantity: 1 }]);
+        } else {
+            // If the ingredient already exists, increase its quantity by 1
+            setShoppingList(prevList => {
+                const updatedList = [...prevList];
+                updatedList[existingIndex].quantity += 1;
+                return updatedList;
+            });
         }
     };
 
     const removeFromShoppingList = (ingredient) => {
         setShoppingList(prevList => prevList.filter(item => item.id !== ingredient.id));
-        presenter.saveShoppingList(shoppingList);
     };
 
     return (
@@ -74,7 +79,7 @@ const ShoppingListView = () => {
                                 source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }}
                                 style={{ width: 50, height: 50, marginRight: 10 }}
                             />
-                            <Text>{item.name}</Text>
+                            <Text>{item.name} Qty: {item.quantity}</Text>
                             <Button
                                 title="Remove"
                                 onPress={() => removeFromShoppingList(item)} // Call removeFromShoppingList

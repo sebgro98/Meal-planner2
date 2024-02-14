@@ -64,6 +64,17 @@ class HomePagePresenter {
             // Handle error
         }
     }
+
+    async saveShoppingList(shoppingList){
+        await this.model.setShoppingList(shoppingList);
+    }
+
+    async loadShoppingList(){
+        const temp = await this.model.getShoppingList();
+        console.log('Presenter', temp);
+        return temp;
+    }
+
     async getMealDetailsWithID(mealId) {
         try {
             const mealDetails = await this.model.getMealDetails(mealId);

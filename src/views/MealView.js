@@ -4,56 +4,31 @@ import RecipeModel from '../models/RecipeModel';
 import {View, Text, Image, ScrollView, StyleSheet, TouchableOpacity, Button} from 'react-native';
 
 const MealView = ({ route }) => {
-    const [mealDetails, setMealDetails] = useState(null);
     const presenter = new HomePagePresenter(new RecipeModel());
     const [favoriteMeals, setFavoriteMeals] = useState([]);
 
-    const mealdet = route.params.mealDetails; // Get meal ID passed from previous screen
+    const mealDetails = route.params.mealDetails; // Get meal ID passed from previous screen
     console.log('meal view', route.params);
 
     const addToFavorites = () => {
         // Check if the meal ID is already in the array
-        if (!HomePagePresenter.selectedMealIds.includes(mealdet.id)) {
+        if (!HomePagePresenter.selectedMealIds.includes(mealDetails.id)) {
             // Update the array of favorite meal IDs
-            setFavoriteMeals((prevFavorites) => [...prevFavorites, mealdet.id]);
-            HomePagePresenter.selectedMealIds.push(mealdet.id);
+            setFavoriteMeals((prevFavorites) => [...prevFavorites, mealDetails.id]);
+            HomePagePresenter.selectedMealIds.push(mealDetails.id);
             console.log( HomePagePresenter.selectedMealIds);
         } else {
             console.log("Meal already in favorites");
         }
     };
 
-
-    const meal = {
-        name: 'Trump pizza',
-        image: 'trump.jpg',
-        ingredients: ['Ingredient 1', 'Ingredient 2', 'Ingredient 3'],
-        preparationTime: 30,
-        calories: 500,
-        carbs: 50,
-        protein: 20,
-        fat: 10,
-        steps: [
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-            'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-            'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-            'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-            'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-            'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-            'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        ],
-    };
-
     return (
         <ScrollView style={styles.container}>
 
             <View style={styles.imageContainer}>
-                <Image source={require('../../assets/trump.jpg')} style={styles.mealImage} />
+                <Image source={{ uri: mealDetails.image }} style={styles.mealImage} />
                 <View style={styles.titleContainer}>
-                    <Text style={styles.imageTitle}>{meal.name}</Text>
+                    <Text style={styles.imageTitle}>{mealDetails.title}</Text>
                 </View>
             </View>
 
@@ -61,9 +36,9 @@ const MealView = ({ route }) => {
                 <View style={styles.ingredientsContainer}>
                     <Text style={styles.detailsTitle}>Ingredients</Text>
                     <ScrollView>
-                        {meal.ingredients.map((ingredient, index) => (
+                        {mealDetails.extendedIngredients.map((ingredient, index) => (
                             <Text key={index} style={styles.detailsText}>
-                                {ingredient}
+                                {ingredient.measures.metric.amount} {ingredient.measures.metric.unitShort} {ingredient.name}
                             </Text>
                         ))}
                     </ScrollView>
@@ -72,11 +47,12 @@ const MealView = ({ route }) => {
                 <View style={styles.nutritionContainer}>
                     <Text style={styles.detailsTitle}>Nutritional Information</Text>
                     <ScrollView>
-                        <Text style={styles.detailsText}>Cook Time: {meal.preparationTime} minutes</Text>
-                        <Text style={styles.detailsText}>Calories: {meal.calories}</Text>
-                        <Text style={styles.detailsText}>Carbs: {meal.carbs}g</Text>
-                        <Text style={styles.detailsText}>Protein: {meal.protein}g</Text>
-                        <Text style={styles.detailsText}>Fat: {meal.fat}g</Text>
+                        <Text style={styles.detailsText}>Cook Time: {mealDetails.readyInMinutes} minutes</Text>
+                        <Text style={styles.detailsText}>Calories: {}</Text>
+                        <Text style={styles.detailsText}>Carbs: {}g</Text>
+                        <Text style={styles.detailsText}>Protein: {}g</Text>
+                        <Text style={styles.detailsText}>Fat: {}g</Text>
+                        <Text style={styles.detailsText}>Portions: {mealDetails.servings}</Text>
                     </ScrollView>
                 </View>
             </View>
@@ -84,11 +60,7 @@ const MealView = ({ route }) => {
             <View style={styles.stepsContainer}>
                 <Text style={styles.detailsTitle}>Steps</Text>
                 <ScrollView>
-                    {meal.steps.map((step, index) => (
-                        <Text key={index} style={styles.detailsText}>
-                            {index}. {step}
-                        </Text>
-                    ))}
+                    <Text style={styles.detailsText}>{mealDetails.instructions}</Text>
                 </ScrollView>
             </View>
 

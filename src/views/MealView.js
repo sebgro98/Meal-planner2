@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
 import {
@@ -10,15 +10,27 @@ import {
     Button,
     TouchableWithoutFeedback,
     Modal,
-    FlatList
+    FlatList,
+    TextInput,
 } from 'react-native';
 
 const MealView = ({ route }) => {
+    const [shoppingList, setShoppingList] = useState([]);
     const presenter = new HomePagePresenter(new RecipeModel());
     const [favoriteMeals, setFavoriteMeals] = useState([]);
     const [isAddIngredientsVisible, setisAddIngredientsVisible] = useState(false);
-
+    const [ingredientsData, setIngredientsData] = useState([]);
     const mealDetails = route.params.mealDetails; // Get meal ID passed from previous screen
+
+    useEffect(() => {
+        const data = mealDetails.extendedIngredients.map((ingredient) => ({
+            id: ingredient.id,
+            name: ingredient.name,
+            amount: ingredient.measures.metric.amount,
+            unit: ingredient.measures.metric.unitShort,
+        }));
+        setIngredientsData(data);
+    }, []);
 
     const addToFavorites = () => {
         // Check if the meal ID is already in the array
@@ -34,6 +46,18 @@ const MealView = ({ route }) => {
 
     function toggleAddIngredientsVisibility() {
         setisAddIngredientsVisible(!isAddIngredientsVisible);
+    }
+
+    function setIngredientAmount(id, amount) {
+        const data = ingredientsData.map((ingredient) => {
+            if (ingredient.id === id) return { ...ingredient, amount: amount};
+            return ingredient;
+        });
+        setIngredientsData(data);
+    }
+
+    function addIngredient(id, amount) {
+        console.log("adding ingredient: ", id, "amount: ", amount);
     }
 
     return (
@@ -104,9 +128,24 @@ const MealView = ({ route }) => {
                         <TouchableWithoutFeedback>
                             <View style={styles.addIngredientsContainer}>
                                 <FlatList
-                                    data={mealDetails.extendedIngredients}
-                                    renderItem={({ingredient}) => (
-                                        <Text style={styles.addIngredientsText}> {ingredient.name} Add</Text>
+                                    data={ingredientsData}
+                                    renderItem={({item: ingredient}) => (
+                                        <View style={styles.addIngredientItem}>
+                                            <Text style={styles.addIngredientsText} numberOfLines={1}> {ingredient.name}</Text>
+                                            <TextInput
+                                                style={styles.addIngredientBox}
+                                                placeholder={ingredient.amount.toString()}
+                                                keyboardType="numeric"
+                                                onChangeText={(amount) => setIngredientAmount(ingredient.id, Number(amount))}
+                                                value={ingredient.amount.toString()}
+                                            />
+                                            <Text style={styles.addIngredientsText}> {ingredient.unit}</Text>
+
+                                            <Button
+                                                title="Add"
+                                                onPress={() => addIngredient(ingredient.id, ingredient.amount)}
+                                            />
+                                        </View>
                                     )}
                                     keyExtractor={(ingredient) => ingredient.id}
                                 />
@@ -230,7 +269,20 @@ const styles = StyleSheet.create({
     },
 
     addIngredientsText: {
-        fontSize: 20,
+        fontSize: 18,
+    },
+    addIngredientItem: {
+        flexDirection: "row",
+        alignItems: "center",
+
+    },
+    addIngredientBox: {
+        height: 25,
+        width: 38,
+        padding: 2,
+        borderWidth: 1,
+        borderColor: "black",
+        marginLeft: 10,
     }
 
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef } from 'react';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
 import {
@@ -12,6 +12,7 @@ import {
     Modal,
     FlatList,
     TextInput,
+    PanResponder, Animated,
 } from 'react-native';
 
 const MealView = ({ route }) => {
@@ -31,6 +32,35 @@ const MealView = ({ route }) => {
         }));
         setIngredientsData(data);
     }, []);
+
+    const swipeThreshold = 100; // Adjust this threshold as needed
+    const swipeAnim = useRef(new Animated.Value(0)).current;
+
+    const panResponder = useRef(
+        PanResponder.create({
+            onMoveShouldSetPanResponder: (evt, gestureState) => gestureState.dx > 5,
+            onPanResponderMove: (evt, gestureState) => {
+                swipeAnim.setValue(gestureState.dx);
+            },
+            onPanResponderRelease: (evt, gestureState) => {
+                if (gestureState.dx > swipeThreshold) {
+                    Animated.timing(swipeAnim, {
+                        toValue: 0,
+                        duration: 300,
+                        useNativeDriver: true,
+                    }).start(() => {
+                        route.params.navigate('Home');
+                    });
+                } else {
+                    Animated.timing(swipeAnim, {
+                        toValue: 0,
+                        duration: 300,
+                        useNativeDriver: true,
+                    }).start();
+                }
+            },
+        })
+    ).current;
 
     const addToFavorites = () => {
         // Check if the meal ID is already in the array
@@ -61,6 +91,11 @@ const MealView = ({ route }) => {
     }
 
     return (
+        <Animated.View
+            style={[styles.container, { transform: [{ translateX: swipeAnim }] }]}
+            {...panResponder.panHandlers}
+        >
+
         <ScrollView style={styles.container}>
 
             <View style={styles.imageContainer}>
@@ -155,9 +190,8 @@ const MealView = ({ route }) => {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
-
-
         </ScrollView>
+        </Animated.View>
     );
 };
 

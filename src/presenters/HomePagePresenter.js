@@ -102,11 +102,15 @@ class HomePagePresenter {
     // Custom method to navigate to MealView from the presenter
     navigateToMealView(mealDetails, navigation) {
         if (this.view && navigation) {
-            navigation.navigate('MealDetails', { mealDetails});
+            navigation.navigate('MealDetails', { mealDetails, navigate: navigation.navigate});
         } else {
             console.error('Navigation object not available in the presenter.');
         }
     }
+
+    navigateToHomeView() {{
+        navigation.navigate("Home");
+    }}
 
 }
 

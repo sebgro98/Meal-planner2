@@ -70,16 +70,29 @@ const MealAPI = {
     getFilteredRecipes: async (filters) => {
         try {
             const { category, diet, mealType, prepTime, maxCalories, ingredients } = filters;
-            console.log("This is big mommy",filters)
-            console.log(`${BASE_URL}/recipes/complexSearch?includeIngredients=${mealType},${ingredients}&diet=${diet}&maxReadyTime=${prepTime}&apiKey=${apiKey}&type=${category}&maxCalories=${maxCalories}`)
-            const response = await axios.get(`${BASE_URL}/recipes/complexSearch?includeIngredients=${mealType},${ingredients}&diet=${diet}&maxReadyTime=${prepTime}&apiKey=${apiKey}&type=${category}&maxCalories=${maxCalories}`);
-            //const response = await axios.get(`https://api.spoonacular.com/recipes/complexSearch?includeIngredients=&diet=vegan&maxReadyTime=45&apiKey=83c2ce9b1a1343358a4dec5ecc0b25a7`)
+            console.log("This is big mommy", filters);
+
+            let apiUrl = `${BASE_URL}/recipes/complexSearch?includeIngredients=${mealType},${ingredients}&diet=${diet}&apiKey=${apiKey}&type=${category}`;
+
+            // Check if maxCalories is not empty
+            if (maxCalories) {
+                apiUrl += `&maxCalories=${maxCalories}`;
+            }
+
+            // Check if prepTime is not empty
+            if (prepTime) {
+                apiUrl += `&maxReadyTime=${prepTime}`;
+            }
+
+            console.log(apiUrl);
+
+            const response = await axios.get(apiUrl);
             return response.data;
         } catch (error) {
             console.error('Error fetching filtered recipes:', error);
             throw error;
         }
-    },
+    }
 };
 
 export default MealAPI;

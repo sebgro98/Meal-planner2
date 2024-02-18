@@ -61,7 +61,7 @@ const FilterView = ({ onApplyFilters }) => {
             <RNPickerSelect
                 onValueChange={(value) => setSelectedPrepTime(value)}
                 items={[
-                    { label: 'Less than 30 min', value: '>30' },
+                    { label: '20 min', value: '20' },
                     { label: '45 min', value: '45' },
                     { label: '30 min', value: '30' },
                 ]}

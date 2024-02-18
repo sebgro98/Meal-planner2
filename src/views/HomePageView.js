@@ -25,7 +25,7 @@ const HomePageView = ({ navigation }) => {
     };
 
     useEffect(() => {
-        //presenter.fetchData();
+        presenter.fetchData();
     }, []);
 
 

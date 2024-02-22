@@ -69,22 +69,14 @@ const MealAPI = {
 
     getFilteredRecipes: async (filters) => {
         try {
-            const { category, diet, mealType, prepTime, maxCalories, ingredients } = filters;
-            console.log("This is big mommy", filters);
+            let queryTerms = filters.join(','); // Join the filters with commas
 
-            let apiUrl = `${BASE_URL}/recipes/complexSearch?includeIngredients=${mealType},${ingredients}&diet=${diet}&apiKey=${apiKey}&type=${category}`;
+            let apiUrl = `${BASE_URL}/recipes/complexSearch?query=${queryTerms}&apiKey=${apiKey}`;
 
-            // Check if maxCalories is not empty
-            if (maxCalories) {
-                apiUrl += `&maxCalories=${maxCalories}`;
-            }
+            // You can add additional parameters here if needed
+            // For example, if you have other specific filters like maxCalories, you can append them to the URL
 
-            // Check if prepTime is not empty
-            if (prepTime) {
-                apiUrl += `&maxReadyTime=${prepTime}`;
-            }
-
-            console.log(apiUrl);
+            console.log("API URL:", apiUrl);
 
             const response = await axios.get(apiUrl);
             return response.data;
@@ -93,6 +85,7 @@ const MealAPI = {
             throw error;
         }
     }
+
 };
 
 export default MealAPI;

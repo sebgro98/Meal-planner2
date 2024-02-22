@@ -8,7 +8,9 @@ import {
     Button,
     TextInput,
     Modal,
-    TouchableWithoutFeedback, TouchableOpacity
+    TouchableWithoutFeedback,
+    TouchableOpacity,
+    ScrollView
 } from 'react-native';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
@@ -52,9 +54,29 @@ const HomePageView = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text>Meal Planner</Text>
+            <Text style={styles.headerText}>Meal Planner</Text>
 
-            <Button title="Filter" onPress={toggleFilterVisibility} />
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalContainer}>
+                <View style={styles.buttonContainer}>
+                    <Button title="Filter" onPress={toggleFilterVisibility}
+                            color="#8A2BE2"/>
+                </View>
+                <View style={styles.buttonContainer}>
+                    <Button
+                        title="Go to Favorites"
+                        onPress={() => navigation.navigate('Favorites')}
+                        color="#8A2BE2"
+                    />
+                </View>
+                <View style={styles.buttonContainer}>
+                    <Button
+                        title="Go to Shopping List"
+                        onPress={() => navigation.navigate('ShoppingList')}
+                        color="#8A2BE2"
+                    />
+                </View>
+                {/* Add more buttons or views here as needed */}
+            </ScrollView>
 
             <Modal
                 visible={isFilterVisible}
@@ -76,18 +98,6 @@ const HomePageView = ({ navigation }) => {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            <TextInput placeholder="Search for recipes..." />
-            {/* Implement a list or grid for categories */}
-            {/* Feature a recipe of the day or similar */}
-            {/* Navigation buttons to other views */}
-            <Button
-                title="Go to Favorites"
-                onPress={() => navigation.navigate('Favorites')}
-            />
-            <Button
-                title="Go to Shopping List"
-                onPress={() => navigation.navigate('ShoppingList')}
-            />
             {/* ... other navigation buttons */}
             {recipes.results && (
                 <FlatList
@@ -109,18 +119,38 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         backgroundColor: '#f2f2f2',
     },
+    headerText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    horizontalContainer: {
+        flexDirection: 'row',
+        marginBottom: 20,
+    },
+    buttonContainer: {
+        marginRight: 5,
+        minWidth: 20, // Increase the minimum width of the buttons
+        height: 40, // Increase the height of the buttons
+        justifyContent: 'center',
+    },
+    searchInput: {
+        marginBottom: 20,
+        padding: 10,
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        backgroundColor: '#fff',
+    },
     recipeItem: {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         padding: 10,
         marginBottom: 10,
-        backgroundColor: '#c1ecc1',
+        backgroundColor: '#fff',
         borderRadius: 10,
-        elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
         width: '48%',
         marginRight: '2%',
     },
@@ -135,30 +165,20 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-
     modalView: {
         margin: 20,
         backgroundColor: "white",
         padding: 20,
         borderRadius: 20,
         alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-        width: '80%', // Adjust the width
-        height: '60%', // Adjust the height
+        width: '80%',
+        height: '60%',
         alignSelf: 'center',
     },
-
     modalOverlay: {
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
 });
 

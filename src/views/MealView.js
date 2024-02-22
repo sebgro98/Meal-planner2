@@ -7,13 +7,13 @@ import {
     Image,
     ScrollView,
     StyleSheet,
-    Button,
     TouchableWithoutFeedback,
     Modal,
     FlatList,
     TextInput,
     PanResponder, Animated,
 } from 'react-native';
+import {Card, Paragraph, Portal, Provider, Title, Button} from "react-native-paper";
 
 const MealView = ({ route }) => {
     const [shoppingList, setShoppingList] = useState([]);
@@ -68,7 +68,7 @@ const MealView = ({ route }) => {
             // Update the array of favorite meal IDs
             setFavoriteMeals((prevFavorites) => [...prevFavorites, mealDetails.id]);
             HomePagePresenter.selectedMealIds.push(mealDetails.id);
-            console.log( HomePagePresenter.selectedMealIds);
+            console.log(HomePagePresenter.selectedMealIds);
         } else {
             console.log("Meal already in favorites");
         }
@@ -80,7 +80,7 @@ const MealView = ({ route }) => {
 
     function setIngredientAmount(id, amount) {
         const data = ingredientsData.map((ingredient) => {
-            if (ingredient.id === id) return { ...ingredient, amount: amount};
+            if (ingredient.id === id) return {...ingredient, amount: amount};
             return ingredient;
         });
         setIngredientsData(data);
@@ -91,235 +91,183 @@ const MealView = ({ route }) => {
     }
 
     return (
-        <Animated.View
-            style={[styles.container, { transform: [{ translateX: swipeAnim }] }]}
-            {...panResponder.panHandlers}
-        >
+        <Provider>
+            <Animated.View
+                style={[styles.container, {transform: [{translateX: swipeAnim}]}]} {...panResponder.panHandlers}>
+                <ScrollView style={styles.container}>
+                    <View style={styles.imageContainer}>
+                        <Image source={{uri: mealDetails.image}} style={styles.mealImage}/>
+                        <Text style={styles.title}>{mealDetails.title}</Text>
+                    </View>
 
-        <ScrollView style={styles.container}>
-
-            <View style={styles.imageContainer}>
-                <Image source={{ uri: mealDetails.image }} style={styles.mealImage} />
-                <View style={styles.titleContainer}>
-                    <Text style={styles.imageTitle}>{mealDetails.title}</Text>
-                </View>
-            </View>
-
-            <View style={styles.detailsContainer}>
-                <View style={styles.ingredientsContainer}>
-                    <Text style={styles.detailsTitle}>Ingredients</Text>
-                    <ScrollView>
+                    {/* Ingredients */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Ingredients</Text>
                         {mealDetails.extendedIngredients.map((ingredient, index) => (
-                            <Text key={index} style={styles.detailsText}>
+                            <Text key={index} style={styles.paragraph}>
                                 {ingredient.measures.metric.amount} {ingredient.measures.metric.unitShort} {ingredient.name}
                             </Text>
                         ))}
-                    </ScrollView>
-                </View>
+                    </View>
 
-                <View style={styles.nutritionContainer}>
-                    <Text style={styles.detailsTitle}>Nutritional Information</Text>
-                    <ScrollView>
-                        <Text style={styles.detailsText}>Cook Time: {mealDetails.readyInMinutes} minutes</Text>
-                        <Text style={styles.detailsText}>Health score: {mealDetails.healthScore}/100</Text>
-                        <Text style={styles.detailsText}>Calories: {mealDetails.calories}</Text>
-                        <Text style={styles.detailsText}>Carbs: {mealDetails.carbs}</Text>
-                        <Text style={styles.detailsText}>Protein: {mealDetails.protein}</Text>
-                        <Text style={styles.detailsText}>Fat: {mealDetails.fat}</Text>
-                        <Text style={styles.detailsText}>Portions: {mealDetails.servings}</Text>
-                    </ScrollView>
-                </View>
-            </View>
+                    {/* Nutritional Information */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Nutritional Information</Text>
+                        <Text style={styles.paragraph}>Cook Time: {mealDetails.readyInMinutes} minutes</Text>
+                        <Text style={styles.paragraph}>Health score: {mealDetails.healthScore}/100</Text>
+                        <Text style={styles.paragraph}>Calories: {mealDetails.calories}</Text>
+                        {mealDetails.extendedIngredients.map((ingredient, index) => (
+                            <Text key={index} style={styles.paragraph}>
+                                {ingredient.measures.metric.amount} {ingredient.measures.metric.unitShort} {ingredient.name}
+                            </Text>
+                        ))}
+                        <Text style={styles.paragraph}>Carbs: {mealDetails.carbs}</Text>
+                        <Text style={styles.paragraph}>Protein: {mealDetails.protein}</Text>
+                        <Text style={styles.paragraph}>Fat: {mealDetails.fat}</Text>
+                        <Text style={styles.paragraph}>Portions: {mealDetails.servings}</Text>
+                    </View>
 
-            <View style={styles.stepsContainer}>
-                <Text style={styles.detailsTitle}>Steps</Text>
-                <Text style={styles.detailsText}>{mealDetails.instructions}</Text>
-            </View>
+                    {/* Steps */}
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>Steps</Text>
+                        <Text style={styles.paragraph}>{mealDetails.instructions}</Text>
+                    </View>
 
-            <View style={styles.stepsContainer}>
-                <Button
-                    title="Add to Favorites"
-                    onPress={addToFavorites}
-                    color="white"
-                />
-            </View>
+                    <Button mode="contained" onPress={addToFavorites} style={styles.button}>
+                        Add to Favorites
+                    </Button>
 
-            <View style={styles.stepsContainer}>
-                <Button
-                    title="Add ingredients to shopping list"
-                    onPress={toggleAddIngredientsVisibility}
-                    color="white"
-                />
-            </View>
+                    <Button mode="contained" onPress={toggleAddIngredientsVisibility} style={styles.button}>
+                        Add Ingredients to Shopping List
 
-            <Modal
-                visible={isAddIngredientsVisible}
-                onRequestClose={toggleAddIngredientsVisibility}
-                transparent={true}
-            >
+                    </Button>
 
-                <TouchableWithoutFeedback onPress={toggleAddIngredientsVisibility}>
-                    <View style={styles.addIngredientsOverlay} onClose={toggleAddIngredientsVisibility}>
-                        <TouchableWithoutFeedback>
-                            <View style={styles.addIngredientsContainer}>
-                                <FlatList
-                                    data={ingredientsData}
-                                    renderItem={({item: ingredient}) => (
-                                        <View style={styles.addIngredientItem}>
-                                            <Text style={styles.addIngredientsText} numberOfLines={1}> {ingredient.name}</Text>
-                                            <TextInput
-                                                style={styles.addIngredientBox}
-                                                placeholder={ingredient.amount.toString()}
-                                                keyboardType="numeric"
-                                                onChangeText={(amount) => setIngredientAmount(ingredient.id, Number(amount))}
-                                                value={ingredient.amount.toString()}
-                                            />
-                                            <Text style={styles.addIngredientsText}> {ingredient.unit}</Text>
-
-                                            <Button
-                                                title="Add"
-                                                onPress={() => addIngredient(ingredient.id, ingredient.amount)}
+                    <Portal>
+                        <Modal visible={isAddIngredientsVisible} transparent={true} onRequestClose={toggleAddIngredientsVisibility}>
+                            <TouchableWithoutFeedback onPress={toggleAddIngredientsVisibility}>
+                                <View style={styles.modalOverlay}  onClose={toggleAddIngredientsVisibility}>
+                                    <TouchableWithoutFeedback>
+                                        <View style={styles.addIngredientsContainer}>
+                                            <FlatList
+                                                data={ingredientsData}
+                                                renderItem={({ item: ingredient }) => (
+                                                    <View style={styles.input}>
+                                                        <TextInput
+                                                            style={styles.inputText}
+                                                            placeholder={ingredient.amount.toString()}
+                                                            keyboardType="numeric"
+                                                            onChangeText={(amount) => setIngredientAmount(ingredient.id, Number(amount))}
+                                                            value={ingredient.amount.toString()}
+                                                        />
+                                                        <Text> {ingredient.unit}</Text>
+                                                        <Button mode="contained" onPress={() => {
+                                                            addIngredient(ingredient.id, ingredient.amount);
+                                                        }} style={styles.addButton}>
+                                                            <Text style={styles.addButtonText}>Add</Text>
+                                                        </Button>
+                                                    </View>
+                                                )}
+                                                keyExtractor={(ingredient) => ingredient.id.toString()}
                                             />
                                         </View>
-                                    )}
-                                    keyExtractor={(ingredient) => ingredient.id}
-                                />
-                            </View>
-                        </TouchableWithoutFeedback>
+                                    </TouchableWithoutFeedback>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </Modal>
+                    </Portal>
 
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
-        </ScrollView>
-        </Animated.View>
+                </ScrollView>
+            </Animated.View>
+        </Provider>
     );
-};
+}
+
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-    },
-    header: {
-        backgroundColor: '#3dd944',
-        padding: 10,
-        borderRadius: 15,
-        marginTop: 20,
-        marginLeft: 10,
-        marginRight: 10,
-    },
-    headerText: {
-        color: '#fff',
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'center',
+        backgroundColor: '#FAEBD7',
     },
     imageContainer: {
+        alignItems: 'center',
         margin: 10,
     },
     mealImage: {
         width: '100%',
         height: 250,
         borderRadius: 8,
-        marginBottom: 10,
     },
-    titleContainer: {
-        backgroundColor: '#3dd944',
-        borderRadius: 15,
-        padding: 10,
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginTop: 10,
     },
-    imageTitle: {
-        color: '#fff',
-        fontSize: 20,
-        textAlign: 'center',
-        fontWeight: "bold",
+    section: {
+        marginHorizontal: 15,
+        marginBottom: 15,
     },
-    detailsContainer: {
-        flexDirection: 'row',
-        margin: 10,
-        marginTop: 0,
-    },
-    ingredientsContainer: {
-        flex: 1,
-        backgroundColor: '#3dd944',
-        borderRadius: 15,
-        padding: 10,
-    },
-    nutritionContainer: {
-        flex: 1,
-        backgroundColor: '#3dd944',
-        borderRadius: 15,
-        padding: 10,
-        marginLeft: 10,
-    },
-    stepsContainer: {
-        flex: 1,
-        backgroundColor: '#3dd944',
-        borderRadius: 15,
-        padding: 10,
-        marginLeft: 10,
-        marginRight: 10,
-        marginBottom: 10,
-    },
-    detailsTitle: {
-        color: '#fff',
+    sectionTitle: {
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 10,
     },
-    detailsText: {
-        color: '#fff',
+    paragraph: {
+        fontSize: 16,
         marginBottom: 5,
     },
-    buttonContainer: {
-        marginVertical: 10,
-        marginHorizontal: 20,
+    button: {
+        margin: 10,
     },
-
-    addIngredientsOverlay: {
+    modalOverlay: {
         flex: 1,
-        textAlign: 'center',
+        justifyContent: 'center', // Align center vertically
+        alignItems: 'center', // Align center horizontally
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
-
     addIngredientsContainer: {
-        marginTop: 120,
-        margin: 20,
-        backgroundColor: "white",
-        padding: 20,
+        backgroundColor: "#FAEBD7",
         borderRadius: 20,
-        alignItems: "center",
+        padding: 20,
+        width: '80%',
+        maxWidth: 400, // Set a maximum width for larger screens
+        alignItems: 'center',
         shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
-        width: '80%', // Adjust the width
-        height: 'auto', // Adjust the height
-        alignSelf: 'center',
     },
-
-    addIngredientsText: {
-        fontSize: 18,
+    input: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 4,
+        padding: 5,
+        marginBottom: 10, // Add bottom margin for spacing between ingredient items
+        width: '100%',
     },
-    addIngredientItem: {
-        flexDirection: "row",
-        alignItems: "center",
-
-    },
-    addIngredientBox: {
-        height: 25,
-        width: 38,
-        padding: 2,
+    inputText: {
+        flex: 1,
+        marginRight: 5, // Reduced margin
         borderWidth: 1,
-        borderColor: "black",
-        marginLeft: 10,
-    }
-
+        borderColor: '#007bff',
+        padding: 5, // Reduced padding
+        fontSize: 14, // Smaller font size
+    },
+    addButton: {
+        backgroundColor: '#007bff',
+        paddingHorizontal: 2,
+        paddingVertical: 2,
+        borderRadius: 2,
+        marginTop: 5, // Add top margin for spacing above the button
+    },
+    addButtonText: {
+        color: '#fff',
+        fontSize: 10, // Smaller font size for the button text
+    },
 
 });
+
+
 
 export default MealView;

@@ -20,9 +20,10 @@ class HomePagePresenter {
 
     async applyFilters(filters) {
         try {
+            console.log("filters", filters)
             const filteredData = await this.model.getFilteredRecipes(filters);
             this.view.updateData(filteredData);
-            console.log("hello");
+            console.log("filteredData", filteredData);
         } catch (error) {
             console.error('Error applying filter:', error);
         }

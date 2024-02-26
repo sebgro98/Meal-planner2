@@ -5,7 +5,7 @@ import RecipeModel from '../models/RecipeModel';
 
 const FavoritesView = ({ navigation }) => {
     const [favorites, setFavorites] = useState([]);
-    const presenter = new HomePagePresenter(new RecipeModel());
+    const presenter = new HomePagePresenter(new RecipeModel(), { updateData: setFavorites });
 
     useEffect(() => {
         const fetchFavorites = async () => {
@@ -18,9 +18,10 @@ const FavoritesView = ({ navigation }) => {
     }, []);
 
     const handleRecipePress = (item) => {
-        const mealDetails = presenter.getMealDetailsWithID(item.id );// Navigate to a new screen or perform any action with the selected recipe information
-        navigation.navigate('MealDetails', { mealDetails});
-        console.log('Selected Recipe:', item);
+        //const mealDetails = presenter.getMealDetailsWithID(item.id );// Navigate to a new screen or perform any action with the selected recipe information
+        presenter.getMealDetails(item.id, navigation );
+        //console.log('Selected Recipe:', item);
+        //navigation.navigate('MealDetails', { item});
     };
 
     const renderRecipe = ({ item }) => (

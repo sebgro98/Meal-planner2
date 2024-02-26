@@ -22,6 +22,13 @@ const MealView = ({ route }) => {
     const [isAddIngredientsVisible, setisAddIngredientsVisible] = useState(false);
     const [ingredientsData, setIngredientsData] = useState([]);
     const mealDetails = route.params.mealDetails; // Get meal ID passed from previous screen
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    useEffect(() => {
+        // Check if the meal ID is already in the array
+        setIsFavorite(HomePagePresenter.selectedMealIds.includes(mealDetails.id));
+    }, [mealDetails.id])
+
 
     useEffect(() => {
         const data = mealDetails.extendedIngredients.map((ingredient) => ({
@@ -32,6 +39,22 @@ const MealView = ({ route }) => {
         }));
         setIngredientsData(data);
     }, []);
+
+    const toggleFavorite = () => {
+        if (isFavorite) {
+            // Remove from favorites
+            const updatedFavorites = favoriteMeals.filter((mealId) => mealId !== mealDetails.id);
+            setFavoriteMeals(updatedFavorites);
+            HomePagePresenter.selectedMealIds = updatedFavorites;
+        } else {
+            // Add to favorites
+            setFavoriteMeals((prevFavorites) => [...prevFavorites, mealDetails.id]);
+            HomePagePresenter.selectedMealIds.push(mealDetails.id);
+        }
+
+        // Toggle the isFavorite state
+        setIsFavorite(!isFavorite);
+    };
 
     const swipeThreshold = 100; // Adjust this threshold as needed
     const swipeAnim = useRef(new Animated.Value(0)).current;
@@ -62,17 +85,6 @@ const MealView = ({ route }) => {
         })
     ).current;
 
-    const addToFavorites = () => {
-        // Check if the meal ID is already in the array
-        if (!HomePagePresenter.selectedMealIds.includes(mealDetails.id)) {
-            // Update the array of favorite meal IDs
-            setFavoriteMeals((prevFavorites) => [...prevFavorites, mealDetails.id]);
-            HomePagePresenter.selectedMealIds.push(mealDetails.id);
-            console.log(HomePagePresenter.selectedMealIds);
-        } else {
-            console.log("Meal already in favorites");
-        }
-    };
 
     function toggleAddIngredientsVisibility() {
         setisAddIngredientsVisible(!isAddIngredientsVisible);
@@ -133,8 +145,9 @@ const MealView = ({ route }) => {
                         <Text style={styles.paragraph}>{mealDetails.instructions}</Text>
                     </View>
 
-                    <Button mode="contained" onPress={addToFavorites} style={styles.button}>
-                        Add to Favorites
+                    {/* Toggle between "Add to Favorites" and "Remove from Favorites" */}
+                    <Button mode="contained" onPress={toggleFavorite} style={styles.button}>
+                        {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
                     </Button>
 
                     <Button mode="contained" onPress={toggleAddIngredientsVisibility} style={styles.button}>

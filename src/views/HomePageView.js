@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import Icon from 'react-native-vector-icons/FontAwesome'; // You can choose the icon set you prefer
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
     View,
     Text,
@@ -34,7 +36,7 @@ const HomePageView = ({ navigation }) => {
     };
 
     useEffect(() => {
-        presenter.fetchData();
+        presenter.fetchData(10);
     }, []);
 
 
@@ -48,6 +50,10 @@ const HomePageView = ({ navigation }) => {
         console.log('Selected Recipe:', item);
     };
 
+    const getMoreRecepi = (num) => {
+        presenter.fetchData(num);
+    }
+
     const renderRecipe = ({item}) => (
         <View style={styles.recipeItem}>
             <TouchableOpacity onPress={() => handleRecipePress(item)}>
@@ -60,77 +66,91 @@ const HomePageView = ({ navigation }) => {
     );
 
     return (
-        <View style={[styles.container, isDrawerOpen ? {flex: 1} : {flex: 1}]}>
-            <View style={styles.header}>
-                <TouchableOpacity style={styles.menuButton} onPress={toggleDrawer}>
-                    <View style={styles.hamburgerIcon}>
-                        <View style={styles.hamburgerLine}></View>
-                        <View style={styles.hamburgerLine}></View>
-                        <View style={styles.hamburgerLine}></View>
+        <FlatList
+            style={{ flex: 1 }}
+            ListHeaderComponent={
+                <View style={[styles.container, isDrawerOpen ? { flex: 1 } : { flex: 1 }]}>
+                    <View style={styles.header}>
+                        <TouchableOpacity style={styles.menuButton} onPress={toggleDrawer}>
+                            <View style={styles.hamburgerIcon}>
+                                <View style={styles.hamburgerLine}></View>
+                                <View style={styles.hamburgerLine}></View>
+                                <View style={styles.hamburgerLine}></View>
+                            </View>
+                        </TouchableOpacity>
+                        <Text style={styles.headerText}>Meal Planner</Text>
+                        <TouchableOpacity style={styles.filterButton} onPress={toggleFilterVisibility}>
+                            <Text style={styles.filterButtonText}>Filter</Text>
+                        </TouchableOpacity>
                     </View>
-                </TouchableOpacity>
-                <Text style={styles.headerText}>Meal Planner</Text>
-                <TouchableOpacity style={styles.filterButton} onPress={toggleFilterVisibility}>
-                    <Text style={styles.filterButtonText}>Filter</Text>
-                </TouchableOpacity>
-            </View>
 
-            <View style={styles.drawerContainer}>
-                <View style={[styles.drawer, isDrawerOpen ? styles.drawerOpen : styles.drawerClosed]}>
-                    <TouchableOpacity
-                        style={styles.drawerItem}
-                        onPress={() => {
-                            setIsDrawerOpen(false);
-                            navigation.navigate('Favorites');
-                        }}
-                    >
-                        <Text>Go to Favorites</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.drawerItem}
-                        onPress={() => {
-                            setIsDrawerOpen(false);
-                            navigation.navigate('ShoppingList');
-                        }}
-                    >
-                        <Text>Go to Shopping List</Text>
-                    </TouchableOpacity>
-                    {/* Add more navigation links here */}
-                </View>
-
-                <View style={styles.content}>
-                    {recipes.results && (
-                        <FlatList
-                            key={recipes.results.length}
-                            data={recipes.results}
-                            renderItem={renderRecipe}
-                            keyExtractor={item => item.id.toString()}
-                            numColumns={2}
-                        />
-                    )}
-                </View>
-            </View>
-
-            <Modal
-                visible={isFilterVisible}
-                animationType="slide"
-                transparent={true}
-                onRequestClose={toggleFilterVisibility}
-            >
-                <TouchableWithoutFeedback onPress={toggleFilterVisibility}>
-                    <View style={styles.modalOverlay}>
-                        <TouchableWithoutFeedback>
-                            <View style={styles.modalView}>
-                                <FilterView
-                                    onApplyFilters={applyFilters}
-                                    onClose={toggleFilterVisibility}
+                    <View style={styles.drawerContainer}>
+                        <View style={[styles.drawer, isDrawerOpen ? styles.drawerOpen : styles.drawerClosed]}>
+                            <TouchableOpacity
+                                style={styles.drawerItem}
+                                onPress={() => {
+                                    setIsDrawerOpen(false);
+                                    navigation.navigate('Favorites');
+                                }}
+                            >
+                                <Text>Go to Favorites</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={styles.drawerItem}
+                                onPress={() => {
+                                    setIsDrawerOpen(false);
+                                    navigation.navigate('ShoppingList');
+                                }}
+                            >
+                                <Text>Go to Shopping List</Text>
+                            </TouchableOpacity>
+                            {/* Add more navigation links here */}
+                        </View>
+                        <View style={styles.content}>
+                            {recipes.results && (
+                                <FlatList
+                                    key={recipes.results.length}
+                                    data={recipes.results}
+                                    renderItem={renderRecipe}
+                                    keyExtractor={(item) => item.id.toString()}
+                                    numColumns={2}
                                 />
+                            )}
+                        </View>
+                    </View>
+
+                    <TouchableOpacity
+                        style={styles.viewMoreContainer}
+                        onPress={() => getMoreRecepi(recipes.results.length + 20)}
+                    >
+                        <Text style={styles.viewMoreText}>View More</Text>
+                        <Icon name="arrow-down" size={20} color="#000" />
+                    </TouchableOpacity>
+
+                    <Modal
+                        visible={isFilterVisible}
+                        animationType="slide"
+                        transparent={true}
+                        onRequestClose={toggleFilterVisibility}
+                    >
+                        <TouchableWithoutFeedback onPress={toggleFilterVisibility}>
+                            <View style={styles.modalOverlay}>
+                                <TouchableWithoutFeedback>
+                                    <View style={styles.modalView}>
+                                        <FilterView
+                                            onApplyFilters={applyFilters}
+                                            onClose={toggleFilterVisibility}
+                                        />
+                                    </View>
+                                </TouchableWithoutFeedback>
                             </View>
                         </TouchableWithoutFeedback>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
-        </View>
+                    </Modal>
+                </View>
+            }
+            data={['dummy']} // Dummy data to render ListFooterComponent
+            renderItem={({ item }) => null} // Dummy renderItem function
+        />
     );
 };
 
@@ -138,6 +158,20 @@ const HomePageView = ({ navigation }) => {
         container: {
             flex: 1, // Full width by default
             backgroundColor: '#f2f2f2',
+        },
+        scrollContainer: {
+            flex: 1,
+        },
+        viewMoreContainer: {
+            alignItems: 'center',
+            paddingVertical: 10,
+            backgroundColor: '#e0e0e0',
+        },
+
+        viewMoreText: {
+            fontSize: 16,
+            fontWeight: 'bold',
+            marginBottom: 5,
         },
         header: {
             flexDirection: 'row',

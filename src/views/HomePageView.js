@@ -18,9 +18,16 @@ import FilterView from "./FilterView";
 
 const HomePageView = ({ navigation }) => {
     const [recipes, setRecipes] = useState([]);
-    const presenter = new HomePagePresenter(new RecipeModel(), { updateData: setRecipes });
+    const presenter = new HomePagePresenter(new RecipeModel(), {updateData: setRecipes});
 
     const [isFilterVisible, setIsFilterVisible] = useState(false);
+
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+    const toggleDrawer = () => {
+        setIsDrawerOpen(!isDrawerOpen);
+    };
 
     const toggleFilterVisibility = () => {
         setIsFilterVisible(!isFilterVisible);
@@ -37,46 +44,72 @@ const HomePageView = ({ navigation }) => {
     };
 
     const handleRecipePress = (item) => {
-        presenter.getMealDetails(item.id, navigation );// Navigate to a new screen or perform any action with the selected recipe information
+        presenter.getMealDetails(item.id, navigation);// Navigate to a new screen or perform any action with the selected recipe information
         console.log('Selected Recipe:', item);
     };
 
-    const renderRecipe = ({ item }) => (
+    const renderRecipe = ({item}) => (
         <View style={styles.recipeItem}>
             <TouchableOpacity onPress={() => handleRecipePress(item)}>
-            <View>
-                <Image source={{ uri: item.image }} style={styles.image} />
+                <View>
+                    <Image source={{uri: item.image}} style={styles.image}/>
                     <Text style={styles.title}>{item.title}</Text>
-            </View>
+                </View>
             </TouchableOpacity>
         </View>
     );
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.headerText}>Meal Planner</Text>
+        <View style={[styles.container, isDrawerOpen ? {flex: 0.8} : {flex: 1}]}>
+            <View style={styles.header}>
+                <TouchableOpacity style={styles.menuButton} onPress={toggleDrawer}>
+                    <View style={styles.hamburgerIcon}>
+                        <View style={styles.hamburgerLine}></View>
+                        <View style={styles.hamburgerLine}></View>
+                        <View style={styles.hamburgerLine}></View>
+                    </View>
+                </TouchableOpacity>
+                <Text style={styles.headerText}>Meal Planner</Text>
+                <TouchableOpacity style={styles.filterButton} onPress={toggleFilterVisibility}>
+                    <Text style={styles.filterButtonText}>Filter</Text>
+                </TouchableOpacity>
+            </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalContainer}>
-                <View style={styles.buttonContainer}>
-                    <Button title="Filter" onPress={toggleFilterVisibility}
-                            color="#8A2BE2"/>
+            <View style={styles.drawerContainer}>
+                <View style={[styles.drawer, isDrawerOpen ? styles.drawerOpen : styles.drawerClosed]}>
+                    <TouchableOpacity
+                        style={styles.drawerItem}
+                        onPress={() => {
+                            setIsDrawerOpen(false);
+                            navigation.navigate('Favorites');
+                        }}
+                    >
+                        <Text>Go to Favorites</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.drawerItem}
+                        onPress={() => {
+                            setIsDrawerOpen(false);
+                            navigation.navigate('ShoppingList');
+                        }}
+                    >
+                        <Text>Go to Shopping List</Text>
+                    </TouchableOpacity>
+                    {/* Add more navigation links here */}
                 </View>
-                <View style={styles.buttonContainer}>
-                    <Button
-                        title="Go to Favorites"
-                        onPress={() => navigation.navigate('Favorites')}
-                        color="#8A2BE2"
-                    />
+
+                <View style={styles.content}>
+                    {recipes.results && (
+                        <FlatList
+                            key={recipes.results.length}
+                            data={recipes.results}
+                            renderItem={renderRecipe}
+                            keyExtractor={item => item.id.toString()}
+                            numColumns={2}
+                        />
+                    )}
                 </View>
-                <View style={styles.buttonContainer}>
-                    <Button
-                        title="Go to Shopping List"
-                        onPress={() => navigation.navigate('ShoppingList')}
-                        color="#8A2BE2"
-                    />
-                </View>
-                {/* Add more buttons or views here as needed */}
-            </ScrollView>
+            </View>
 
             <Modal
                 visible={isFilterVisible}
@@ -97,27 +130,105 @@ const HomePageView = ({ navigation }) => {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
-
-            {/* ... other navigation buttons */}
-            {recipes.results && (
-                <FlatList
-                    key={recipes.results.length}
-                    data={recipes.results}
-                    renderItem={renderRecipe}
-                    keyExtractor={item => item.id.toString()}
-                    numColumns={2}
-                />
-            )}
         </View>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1, // Full width by default
+            backgroundColor: '#f2f2f2',
+        },
+        header: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingTop: 20,
+            paddingHorizontal: 10,
+        },
+        drawerContainer: {
+            flex: 1, // Take up all space below the header
+            flexDirection: 'row', // Layout drawer and content side by side
+        },
+        drawer: {
+            position: 'absolute', // Absolute positioning to float over content
+            top: 0,
+            bottom: 0,
+            width: 250, // Drawer width
+            backgroundColor: '#FFF',
+            padding: 20,
+            zIndex: 2, // Higher z-index to float above content
+        },
+        drawerOpen: {
+            left: 0, // Show the drawer
+            width: 200, // Smaller drawer width
+        },
+        drawerClosed: {
+            left: -200, // Fully hide the smaller drawer
+        },
+        content: {
+            flex: 1, // Content takes the rest of the space
+            zIndex: 1, // Lower z-index, content is below drawer
+        },
+    filterButton: {
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        backgroundColor: '#8A2BE2',
+        borderRadius: 5,
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        shadowColor: '#000',
+        shadowOffset: { height: 2, width: 0 },
+        elevation: 3, // for Android shadow
+        alignItems: 'center',
+    },
+    filterButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+        drawerItem: {
+            paddingVertical: 15,
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: '#8A2BE2', // This is a purple color
+        },
+    mainContent: {
         flex: 1,
-        paddingTop: 20,
-        paddingHorizontal: 10,
-        backgroundColor: '#f2f2f2',
+        marginLeft: 0, // Default state with drawer closed
+        zIndex: 1,
+    },
+    mainContentShrink: {
+        marginLeft: 250, // Adjust this to the width of your drawer
+        width: '80%', // You can adjust this percentage to control how much the main content should shrink
+    },
+
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    centerButtonContainer: {
+        flex: 1, // This will allow the button to grow and center itself
+        alignItems: 'center',
+    },
+
+    menuButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+        marginRight: 5,
+    },
+    hamburgerIcon: {
+        width: 35,
+        justifyContent: 'space-around',
+        height: 25, // Height of the entire icon container
+    },
+    hamburgerLine: {
+        height: 3, // Height of each line
+        backgroundColor: 'black',
+        width: '100%',
     },
     headerText: {
         fontSize: 24,
@@ -179,6 +290,15 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        margin: 20,
+        backgroundColor: "white",
+        padding: 20,
+        borderRadius: 20,
+        alignItems: "center",
+        width: '80%',
+        alignSelf: 'center',
     },
 });
 

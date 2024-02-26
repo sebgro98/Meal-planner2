@@ -40,12 +40,24 @@ const MealView = ({route, navigation}) => {
 
     useEffect(() => {
         if (!mealDetails.extendedIngredients) return;
-        const data = mealDetails.extendedIngredients.map((ingredient) => ({
-            id: ingredient.id,
-            name: ingredient.name,
-            amount: ingredient.measures.metric.amount,
-            unit: ingredient.measures.metric.unitShort,
-        }));
+        console.log(mealDetails);
+        const uniqueIngredientIds = new Set(); // Set to store unique ingredient ids
+        const data = mealDetails.extendedIngredients.reduce((accumulator, ingredient) => {
+            // Check if the ingredient id is unique
+            if (!uniqueIngredientIds.has(ingredient.id)) {
+                uniqueIngredientIds.add(ingredient.id); // Add id to set to mark it as seen
+
+                // Add unique ingredient to the data array
+                accumulator.push({
+                    id: ingredient.id,
+                    name: ingredient.name,
+                    amount: ingredient.measures.metric.amount,
+                    unit: ingredient.measures.metric.unitShort,
+                });
+            }
+
+            return accumulator;
+        }, []);
         setIngredientsData(data);
     }, [mealDetails]);
 
@@ -129,9 +141,9 @@ const MealView = ({route, navigation}) => {
                     {/* Ingredients */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Ingredients</Text>
-                        {mealDetails.extendedIngredients.map((ingredient, index) => (
+                        {ingredientsData.map((ingredient, index) => (
                             <Text key={index} style={styles.paragraph}>
-                                {ingredient.measures.metric.amount} {ingredient.measures.metric.unitShort} {ingredient.name}
+                                {ingredient.amount} {ingredient.unit} {ingredient.name}
                             </Text>
                         ))}
                     </View>
@@ -156,7 +168,11 @@ const MealView = ({route, navigation}) => {
                     {/* Steps */}
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Steps</Text>
-                        <Text style={styles.paragraph}>{mealDetails.instructions}</Text>
+                        {mealDetails.steps.map((step, index) => (
+                            <Text key={index} style={styles.stepParagraph}>
+                                {step.number}. {step.step}
+                            </Text>
+                        ))}
                     </View>
 
                     {/* Toggle between "Add to Favorites" and "Remove from Favorites" */}
@@ -175,23 +191,29 @@ const MealView = ({route, navigation}) => {
                                 <View style={styles.modalOverlay}  onClose={toggleAddIngredientsVisibility}>
                                     <TouchableWithoutFeedback>
                                         <View style={styles.addIngredientsContainer}>
+                                            <Text style={styles.sectionTitle}>Add ingredients</Text>
                                             <FlatList
                                                 data={ingredientsData}
                                                 renderItem={({ item: ingredient }) => (
-                                                    <View style={styles.input}>
-                                                        <TextInput
-                                                            style={styles.inputText}
-                                                            placeholder={ingredient.amount.toString()}
-                                                            keyboardType="numeric"
-                                                            onChangeText={(amount) => setIngredientAmount(ingredient.id, Number(amount))}
-                                                            value={ingredient.amount.toString()}
-                                                        />
-                                                        <Text> {ingredient.unit}</Text>
-                                                        <Button mode="contained" onPress={() => {
-                                                            addIngredient(ingredient.id, ingredient.amount);
-                                                        }} style={styles.addButton}>
-                                                            <Text style={styles.addButtonText}>Add</Text>
-                                                        </Button>
+                                                    <View style={styles.ingredientContainer}>
+                                                        <Text style={styles.ingredientName}>{ingredient.name}</Text>
+                                                        <View style={styles.ingredientContentContainer}>
+                                                            <TextInput
+                                                                style={styles.inputText}
+                                                                placeholder={ingredient.amount.toString()}
+                                                                keyboardType="numeric"
+                                                                onChangeText={(amount) => setIngredientAmount(ingredient.id, Number(amount))}
+                                                                value={ingredient.amount.toString()}
+                                                            />
+                                                            <Text style={styles.unitText}> {ingredient.unit}</Text>
+                                                            <View style={{ alignItems: 'flex-end' }}>
+                                                                <Button mode="contained" onPress={() => {
+                                                                    addIngredient(ingredient.id, ingredient.amount);
+                                                                }} style={styles.addButton}>
+                                                                    <Text style={styles.addButtonText}>Add</Text>
+                                                                </Button>
+                                                            </View>
+                                                        </View>
                                                     </View>
                                                 )}
                                                 keyExtractor={(ingredient) => ingredient.id.toString()}
@@ -243,6 +265,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 5,
     },
+    stepParagraph: {
+        fontSize: 16,
+        marginBottom: 10,
+    },
     button: {
         margin: 10,
     },
@@ -257,6 +283,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         width: '80%',
+        height: '90%',
         maxWidth: 400, // Set a maximum width for larger screens
         alignItems: 'center',
         shadowColor: "#000",
@@ -265,29 +292,46 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
     },
-    input: {
-        flexDirection: 'row',
+    ingredientContainer: {
+        flexDirection: 'column', // Display items vertically
         alignItems: 'center',
         backgroundColor: '#fff',
         borderRadius: 4,
         padding: 5,
         marginBottom: 10, // Add bottom margin for spacing between ingredient items
-        width: '100%',
+        width: '95%',
     },
+
+    ingredientName: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5,
+    },
+
+    ingredientContentContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: "flex-end",
+        width: '90%',
+    },
+
     inputText: {
         flex: 1,
-        marginRight: 5, // Reduced margin
+        marginRight: 2,
         borderWidth: 1,
         borderColor: '#007bff',
-        padding: 5, // Reduced padding
-        fontSize: 14, // Smaller font size
+        paddingVertical: 5,
+        paddingHorizontal: 8,
+        fontSize: 14,
+    },
+
+    unitText: {
+        marginLeft: 5,
+        marginRight: 5,
     },
     addButton: {
-        backgroundColor: '#007bff',
-        paddingHorizontal: 2,
-        paddingVertical: 2,
-        borderRadius: 2,
-        marginTop: 5, // Add top margin for spacing above the button
+        color: '#fff',
+        fontSize: 10,
     },
     addButtonText: {
         color: '#fff',

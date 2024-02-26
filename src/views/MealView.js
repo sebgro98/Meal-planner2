@@ -50,19 +50,24 @@ const MealView = ({route, navigation}) => {
     }, [mealDetails]);
 
     const toggleFavorite = () => {
-        if (isFavorite) {
-            // Remove from favorites
-            const updatedFavorites = favoriteMeals.filter((mealId) => mealId !== mealDetails.id);
-            setFavoriteMeals(updatedFavorites);
-            HomePagePresenter.selectedMealIds = updatedFavorites;
-        } else {
-            // Add to favorites
-            setFavoriteMeals((prevFavorites) => [...prevFavorites, mealDetails.id]);
-            HomePagePresenter.selectedMealIds.push(mealDetails.id);
-        }
+        setFavoriteMeals((prevFavorites) => {
+            const isMealInFavorites = presenter.isIDIncluded(mealDetails.id);
+            if (isMealInFavorites) {
+                // Remove from favorites
+                const updatedFavorites = prevFavorites.filter((mealId) => mealId !== mealDetails.id);
+                // Remove from HomePagePresenter.selectedMealIds
+                presenter.removeFavIDs(mealDetails.id);
+                return updatedFavorites;
+            } else {
+                // Add to favorites
+                const updatedFavorites = [...prevFavorites, mealDetails.id];
+                presenter.addAFavIDs(mealDetails.id);
+                return updatedFavorites;
+            }
+        });
 
         // Toggle the isFavorite state
-        setIsFavorite(!isFavorite);
+        setIsFavorite((prevIsFavorite) => !prevIsFavorite);
     };
 
     const swipeThreshold = 100; // Adjust this threshold as needed
@@ -122,7 +127,7 @@ const MealView = ({route, navigation}) => {
                     </View>
 
                     {/* Ingredients */}
-                 <View style={styles.section}>
+                    <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Ingredients</Text>
                         {mealDetails.extendedIngredients.map((ingredient, index) => (
                             <Text key={index} style={styles.paragraph}>

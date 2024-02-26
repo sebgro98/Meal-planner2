@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
     },
     applyButton: {
-        backgroundColor: '#007bff', // Blue background for the button
+        backgroundColor: '#8A2BE2', // Blue background for the button
         padding: 10,
         borderRadius: 5,
     },

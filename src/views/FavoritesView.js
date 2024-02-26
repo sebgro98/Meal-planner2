@@ -19,7 +19,7 @@ const FavoritesView = ({ navigation }) => {
 
     const handleRecipePress = (item) => {
         //const mealDetails = presenter.getMealDetailsWithID(item.id );// Navigate to a new screen or perform any action with the selected recipe information
-        presenter.getMealDetails(item.id, navigation );
+        navigation.navigate('MealDetails', { itemId: item.id});
         //console.log('Selected Recipe:', item);
         //navigation.navigate('MealDetails', { item});
     };

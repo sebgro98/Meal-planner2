@@ -37,7 +37,7 @@ const HomePageView = ({ navigation }) => {
     };
 
     const handleRecipePress = (item) => {
-        presenter.getMealDetails(item.id, navigation );// Navigate to a new screen or perform any action with the selected recipe information
+        navigation.navigate('MealDetails', { itemId: item.id});
         console.log('Selected Recipe:', item);
     };
 

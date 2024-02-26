@@ -76,43 +76,15 @@ class HomePagePresenter {
         return temp;
     }
 
-    async getMealDetailsWithID(mealId) {
+    async getMealDetails(mealId) {
         try {
             const mealDetails = await this.model.getMealDetails(mealId);
-            console.log('Meal Details', mealDetails);
             return mealDetails;
         } catch (error) {
             console.error('Error fetching meal details:', error);
             throw error;
         }
     }
-
-
-    async getMealDetails(mealId, navigation) {
-        try {
-            const mealDetails = await this.model.getMealDetails(mealId);
-            console.log('Meal Details', mealDetails);
-            this.navigateToMealView(mealDetails, navigation); // Use the navigation method in the presenter
-            return mealDetails;
-        } catch (error) {
-            console.error('Error fetching meal details:', error);
-            throw error;
-        }
-    }
-
-    // Custom method to navigate to MealView from the presenter
-    navigateToMealView(mealDetails, navigation) {
-        if (this.view && navigation) {
-            navigation.navigate('MealDetails', { mealDetails, navigate: navigation.navigate});
-        } else {
-            console.error('Navigation object not available in the presenter.');
-        }
-    }
-
-    navigateToHomeView() {{
-        navigation.navigate("Home");
-    }}
-
 }
 
 export default HomePagePresenter;

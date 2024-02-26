@@ -42,6 +42,20 @@ const MealAPI = {
         }
     },
 
+    getRecipeInstructions: async (id) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/recipes/${id}/analyzedInstructions`, {
+                params: {
+                    apiKey: apiKey
+                }
+            });
+            return response.data[0];
+        } catch (error) {
+            console.error('Error fetching instruction details:', error);
+            throw error;
+        }
+    },
+
     getIngredients: async (query) => {
         try {
             const response = await axios.get(`${BASE_URL}/food/ingredients/search?query=${query}&apiKey=${apiKey}&number=10`);

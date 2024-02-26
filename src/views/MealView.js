@@ -15,22 +15,31 @@ import {
 } from 'react-native';
 import {Card, Paragraph, Portal, Provider, Title, Button} from "react-native-paper";
 
-const MealView = ({ route }) => {
+const MealView = ({route, navigation}) => {
+    const mealId = route.params?.itemId;
     const [shoppingList, setShoppingList] = useState([]);
     const presenter = new HomePagePresenter(new RecipeModel());
     const [favoriteMeals, setFavoriteMeals] = useState([]);
     const [isAddIngredientsVisible, setisAddIngredientsVisible] = useState(false);
     const [ingredientsData, setIngredientsData] = useState([]);
-    const mealDetails = route.params.mealDetails; // Get meal ID passed from previous screen
+    const [mealDetails, setMealDetails] = useState({});
     const [isFavorite, setIsFavorite] = useState(false);
 
     useEffect(() => {
-        // Check if the meal ID is already in the array
-        setIsFavorite(HomePagePresenter.selectedMealIds.includes(mealDetails.id));
-    }, [mealDetails.id])
-
+        setIsFavorite(presenter.isIDIncluded(mealDetails.id));
+        const fetchData = async () => {
+            try {
+                const fetchedData = await presenter.getMealDetails(mealId);
+                setMealDetails(fetchedData);
+            } catch (error) {
+                console.error("Error fetching meal details:", error);
+            }
+        };
+        fetchData();
+    }, [mealId]);
 
     useEffect(() => {
+        if (!mealDetails.extendedIngredients) return;
         const data = mealDetails.extendedIngredients.map((ingredient) => ({
             id: ingredient.id,
             name: ingredient.name,
@@ -38,7 +47,7 @@ const MealView = ({ route }) => {
             unit: ingredient.measures.metric.unitShort,
         }));
         setIngredientsData(data);
-    }, []);
+    }, [mealDetails]);
 
     const toggleFavorite = () => {
         if (isFavorite) {
@@ -72,7 +81,7 @@ const MealView = ({ route }) => {
                         duration: 300,
                         useNativeDriver: true,
                     }).start(() => {
-                        route.params.navigate('Home');
+                        navigation.navigate('Home');
                     });
                 } else {
                     Animated.timing(swipeAnim, {
@@ -102,7 +111,7 @@ const MealView = ({ route }) => {
         console.log("adding ingredient: ", id, "amount: ", amount);
     }
 
-    return (
+    return ( mealDetails.extendedIngredients &&
         <Provider>
             <Animated.View
                 style={[styles.container, {transform: [{translateX: swipeAnim}]}]} {...panResponder.panHandlers}>
@@ -113,7 +122,7 @@ const MealView = ({ route }) => {
                     </View>
 
                     {/* Ingredients */}
-                    <View style={styles.section}>
+                 <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Ingredients</Text>
                         {mealDetails.extendedIngredients.map((ingredient, index) => (
                             <Text key={index} style={styles.paragraph}>
@@ -214,6 +223,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginTop: 10,
+        textAlign: "center",
     },
     section: {
         marginHorizontal: 15,

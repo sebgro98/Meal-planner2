@@ -48,7 +48,9 @@ class RecipeModel {
         try {
             const mealDetails = await MealAPI.getRecipeDetails(mealId); // Assuming MealAPI has this method
             const mealNutrition = await MealAPI.getRecipeNutrition(mealId);
+            const mealSteps = await MealAPI.getRecipeInstructions(mealId);
             Object.assign(mealDetails, mealNutrition);
+            Object.assign(mealDetails, mealSteps);
             return mealDetails;
         } catch (error) {
             console.error('Error fetching meal details from API:', error);

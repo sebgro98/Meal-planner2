@@ -40,21 +40,28 @@ const MealView = ({ route }) => {
         setIngredientsData(data);
     }, []);
 
+
     const toggleFavorite = () => {
-        if (isFavorite) {
-            // Remove from favorites
-            const updatedFavorites = favoriteMeals.filter((mealId) => mealId !== mealDetails.id);
-            setFavoriteMeals(updatedFavorites);
-            HomePagePresenter.selectedMealIds = updatedFavorites;
-        } else {
-            // Add to favorites
-            setFavoriteMeals((prevFavorites) => [...prevFavorites, mealDetails.id]);
-            HomePagePresenter.selectedMealIds.push(mealDetails.id);
-        }
+        setFavoriteMeals((prevFavorites) => {
+            const isMealInFavorites = HomePagePresenter.selectedMealIds.includes(mealDetails.id);
+            if (isMealInFavorites) {
+                // Remove from favorites
+                const updatedFavorites = prevFavorites.filter((mealId) => mealId !== mealDetails.id);
+                // Remove from HomePagePresenter.selectedMealIds
+                HomePagePresenter.selectedMealIds = HomePagePresenter.selectedMealIds.filter((mealId) => mealId !== mealDetails.id);
+                return updatedFavorites;
+            } else {
+                // Add to favorites
+                const updatedFavorites = [...prevFavorites, mealDetails.id];
+                HomePagePresenter.selectedMealIds.push(mealDetails.id);
+                return updatedFavorites;
+            }
+        });
 
         // Toggle the isFavorite state
-        setIsFavorite(!isFavorite);
+        setIsFavorite((prevIsFavorite) => !prevIsFavorite);
     };
+
 
     const swipeThreshold = 100; // Adjust this threshold as needed
     const swipeAnim = useRef(new Animated.Value(0)).current;

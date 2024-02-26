@@ -43,9 +43,6 @@ class HomePagePresenter {
                 const mealDetails = await this.model.getMealDetails(mealId);
                 favoriteMealDetails.push(mealDetails);
             }
-
-            console.log('Favorite Meal Details', favoriteMealDetails);
-
             // If you want to navigate to a view with the favorite meal details, you can do it here
             // this.navigateToFavoriteView(favoriteMealDetails, navigation);
 

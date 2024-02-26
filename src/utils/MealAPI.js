@@ -3,9 +3,9 @@ import { apiKey } from './apiConfig';
 const BASE_URL = 'https://api.spoonacular.com'; // Base URL for Spoonacular API
 
 const MealAPI = {
-    getRecipes: async () => {
+    getRecipes: async (num) => {
         try {
-            const response = await axios.get(`${BASE_URL}/recipes/complexSearch?apiKey=${apiKey}&number=10`);
+            const response = await axios.get(`${BASE_URL}/recipes/complexSearch?apiKey=${apiKey}&number=${num}`);
             console.log(response.data);
             return response.data;
         } catch (error) {

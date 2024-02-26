@@ -26,9 +26,9 @@ class RecipeModel {
 
 
 
-    async getRecipes() {
+    async getRecipes(num) {
         // Fetch recipes using the MealAPI utility
-        const data = await MealAPI.getRecipes();
+        const data = await MealAPI.getRecipes(num);
         // You can add additional data manipulation here if needed
         return data;
     }

@@ -36,7 +36,7 @@ const MealView = ({route, navigation}) => {
             }
         };
         fetchData();
-    }, [mealId]);
+    }, [mealDetails.id]);
 
     useEffect(() => {
         if (!mealDetails.extendedIngredients) return;

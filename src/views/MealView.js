@@ -26,7 +26,7 @@ const MealView = ({ route }) => {
 
     useEffect(() => {
         // Check if the meal ID is already in the array
-        setIsFavorite(HomePagePresenter.selectedMealIds.includes(mealDetails.id));
+        setIsFavorite(presenter.isIDIncluded(mealDetails.id));
     }, [mealDetails.id])
 
 
@@ -43,17 +43,17 @@ const MealView = ({ route }) => {
 
     const toggleFavorite = () => {
         setFavoriteMeals((prevFavorites) => {
-            const isMealInFavorites = HomePagePresenter.selectedMealIds.includes(mealDetails.id);
+            const isMealInFavorites = presenter.isIDIncluded(mealDetails.id);
             if (isMealInFavorites) {
                 // Remove from favorites
                 const updatedFavorites = prevFavorites.filter((mealId) => mealId !== mealDetails.id);
                 // Remove from HomePagePresenter.selectedMealIds
-                HomePagePresenter.selectedMealIds = HomePagePresenter.selectedMealIds.filter((mealId) => mealId !== mealDetails.id);
+                presenter.removeFavIDs(mealDetails.id);
                 return updatedFavorites;
             } else {
                 // Add to favorites
                 const updatedFavorites = [...prevFavorites, mealDetails.id];
-                HomePagePresenter.selectedMealIds.push(mealDetails.id);
+                presenter.addAFavIDs(mealDetails.id);
                 return updatedFavorites;
             }
         });

@@ -1,5 +1,4 @@
 class HomePagePresenter {
-    static selectedMealIds = [];
     constructor(model, view) {
         this.model = model;
         this.view = view;
@@ -9,7 +8,6 @@ class HomePagePresenter {
     // Function to handle data fetching and updating the view
     async fetchData() {
         try {
-
             const data = await this.model.getRecipes(); // Replace with actual API call
             this.view.updateData(data); // Method in your view to update the UI
         } catch (error) {
@@ -35,11 +33,24 @@ class HomePagePresenter {
         // e.g., return this.model.getShoppingList();
     }
 
+    removeFavIDs(mealID){
+        this.model.removeFavIDs(mealID);
+    }
+
+    addAFavIDs(mealID){
+        this.model.addAFavIDs(mealID);
+    }
+
+    isIDIncluded(mealID){
+        return this.model.isIDIncluded(mealID);
+    }
+
+
+
     async getFavorites() {
         try {
             const favoriteMealDetails = [];
-
-            for (const mealId of HomePagePresenter.selectedMealIds) {
+            for (const mealId of this.model.getFavs()) {
                 const mealDetails = await this.model.getMealDetails(mealId);
                 favoriteMealDetails.push(mealDetails);
             }

@@ -1,8 +1,31 @@
 import MealAPI from '../utils/MealAPI';
+import HomePagePresenter from "../presenters/HomePagePresenter";
 
 class RecipeModel {
     static shoppingList =[];
     static selectedMealIds = [];
+
+    removeFavIDs(mealID){
+        RecipeModel.selectedMealIds = RecipeModel.selectedMealIds.filter((mealId) => mealId !== mealID);
+    }
+
+    addAFavIDs(mealID){
+        RecipeModel.selectedMealIds.push(mealID);
+    }
+
+    isIDIncluded(mealID){
+        if(RecipeModel.selectedMealIds.includes(mealID)){
+            return true;
+        }
+            return false;
+    }
+    getFavs(){
+        return RecipeModel.selectedMealIds;
+    }
+
+
+
+
     async getRecipes() {
         // Fetch recipes using the MealAPI utility
         const data = await MealAPI.getRecipes();

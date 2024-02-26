@@ -9,15 +9,15 @@ const ShoppingListView = () => {
     const [searchResults, setSearchResults] = useState([]);
     const presenter = new HomePagePresenter(new RecipeModel());
 
-    /*useEffect(() => {
+    useEffect(() => {
         const loadShoppingList = async () => {
             const temp = await presenter.loadShoppingList(); // Method to implement in presenter
             setShoppingList(temp);
-            console.log("shopping list", temp);
+            console.log("shopping list---------------------------------------------------", temp);
         };
 
         loadShoppingList();
-    }, []);*/
+    }, []);
 
     const fetchIngredients = async (query) => {
         try {
@@ -45,12 +45,17 @@ const ShoppingListView = () => {
 
         // If the ingredient does not exist, add it to the shopping list with quantity 1
         if (existingIndex === -1) {
-            setShoppingList(prevList => [...prevList, { ...ingredient, quantity: 1 }]);
+            setShoppingList(prevList => {
+                const updatedList = [...prevList, { ...ingredient, quantity: 1 }];
+                presenter.saveShoppingList(updatedList); // Save updated shopping list
+                return updatedList;
+            });
         } else {
             // If the ingredient already exists, increase its quantity by 1
             setShoppingList(prevList => {
                 const updatedList = [...prevList];
                 updatedList[existingIndex].quantity += 1;
+                presenter.saveShoppingList(updatedList); // Save updated shopping list
                 return updatedList;
             });
         }

@@ -71,9 +71,14 @@ class HomePagePresenter {
     }
 
     async loadShoppingList(){
-        const temp = await this.model.getShoppingList();
-        console.log('Presenter', temp);
-        return temp;
+        try {
+            const temp = await this.model.getShoppingList();
+            console.log('Presenter----------', temp);
+            return temp;
+        }catch(error){
+            console.log('error loading shoppingList', error)
+            throw error
+        }
     }
 
     async getMealDetailsWithID(mealId) {

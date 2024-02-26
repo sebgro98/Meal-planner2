@@ -60,7 +60,7 @@ const HomePageView = ({ navigation }) => {
     );
 
     return (
-        <View style={[styles.container, isDrawerOpen ? {flex: 0.8} : {flex: 1}]}>
+        <View style={[styles.container, isDrawerOpen ? {flex: 1} : {flex: 1}]}>
             <View style={styles.header}>
                 <TouchableOpacity style={styles.menuButton} onPress={toggleDrawer}>
                     <View style={styles.hamburgerIcon}>
@@ -164,7 +164,7 @@ const HomePageView = ({ navigation }) => {
             width: 200, // Smaller drawer width
         },
         drawerClosed: {
-            left: -200, // Fully hide the smaller drawer
+            left: -300, // Fully hide the smaller drawer
         },
         content: {
             flex: 1, // Content takes the rest of the space

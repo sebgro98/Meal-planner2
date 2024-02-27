@@ -11,9 +11,9 @@ import {
     Modal,
     FlatList,
     TextInput,
-    PanResponder, Animated, TouchableOpacity,
+   TouchableOpacity,
 } from 'react-native';
-import {Card, Paragraph, Portal, Provider, Title, Button} from "react-native-paper";
+import {Portal, Button} from "react-native-paper";
 
 const MealView = ({route, navigation}) => {
     const mealId = route.params?.itemId;
@@ -86,36 +86,6 @@ const MealView = ({route, navigation}) => {
         setIsFavorite((prevIsFavorite) => !prevIsFavorite);
     };
 
-    const swipeThreshold = 100; // Adjust this threshold as needed
-    const swipeAnim = useRef(new Animated.Value(0)).current;
-
-    const panResponder = useRef(
-        PanResponder.create({
-            onMoveShouldSetPanResponder: (evt, gestureState) => gestureState.dx > 5,
-            onPanResponderMove: (evt, gestureState) => {
-                swipeAnim.setValue(gestureState.dx);
-            },
-            onPanResponderRelease: (evt, gestureState) => {
-                if (gestureState.dx > swipeThreshold) {
-                    Animated.timing(swipeAnim, {
-                        toValue: 0,
-                        duration: 300,
-                        useNativeDriver: true,
-                    }).start(() => {
-                        navigation.navigate('Home');
-                    });
-                } else {
-                    Animated.timing(swipeAnim, {
-                        toValue: 0,
-                        duration: 300,
-                        useNativeDriver: true,
-                    }).start();
-                }
-            },
-        })
-    ).current;
-
-
     function toggleAddIngredientsVisibility() {
         setisAddIngredientsVisible(!isAddIngredientsVisible);
     }
@@ -130,6 +100,7 @@ const MealView = ({route, navigation}) => {
 
     function addIngredient(id, amount) {
         console.log("adding ingredient: ", id, "amount: ", amount);
+        alert('Ingredient added to shopping list!');
     }
 
     const renderHeader = () => (
@@ -230,15 +201,20 @@ const MealView = ({route, navigation}) => {
                             <Text style={styles.paragraph}>Cook Time: {mealDetails.readyInMinutes} minutes</Text>
                             <Text style={styles.paragraph}>Health score: {mealDetails.healthScore}/100</Text>
                             <Text style={styles.paragraph}>Calories: {mealDetails.calories}</Text>
-                            {mealDetails.extendedIngredients.map((ingredient, index) => (
-                                <Text key={index} style={styles.paragraph}>
-                                    {ingredient.measures.metric.amount} {ingredient.measures.metric.unitShort} {ingredient.name}
-                                </Text>
-                            ))}
                             <Text style={styles.paragraph}>Carbs: {mealDetails.carbs}</Text>
                             <Text style={styles.paragraph}>Protein: {mealDetails.protein}</Text>
                             <Text style={styles.paragraph}>Fat: {mealDetails.fat}</Text>
                             <Text style={styles.paragraph}>Portions: {mealDetails.servings}</Text>
+                            <Text style={styles.paragraph}>
+                                Diets: {mealDetails.diets && mealDetails.diets.length > 0 ? (
+                                mealDetails.diets.map((diet, index) => (
+                                    <React.Fragment key={index}>
+                                        {diet}
+                                        {index !== mealDetails.diets.length - 1 && ', '}
+                                    </React.Fragment>
+                                ))) : (<>No specific diet</>)}
+                            </Text>
+
                         </View>
 
                         {/* Steps */}

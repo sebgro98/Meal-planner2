@@ -18,6 +18,8 @@ const ShoppingListView = ( {navigation}) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [quantityInput, setQuantityInput] = useState('');
+    const [quantities, setQuantities] = useState({});
     const presenter = new HomePagePresenter(new RecipeModel());
 
     useEffect(() => {
@@ -151,28 +153,30 @@ const ShoppingListView = ( {navigation}) => {
         <View style={styles.container}>
             {renderHeader()}
             {isDrawerOpen && renderSideMenu()}
-            <Text>Search ingredient</Text>
+            <Text style={styles.listTitles}>Search ingredient</Text>
             <TextInput
-                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                style={styles.searchBar}
                 onChangeText={handleSearch}
                 value={searchQuery}
                 placeholder="Search"
             />
-            <Text>Shopping List</Text>
+            <Text style={styles.listTitles}>Shopping List</Text>
             {shoppingList && shoppingList.length > 0 ? (
                 <FlatList
                     data={shoppingList}
                     renderItem={({ item }) => (
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={styles.shoppingListItemContainer}>
                             <Image
                                 source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }}
-                                style={{ width: 50, height: 50, marginRight: 10 }}
+                                style={styles.ingredientImage}
                             />
-                            <Text>{item.name} Qty: {item.quantity}</Text>
-                            <Button
-                                title="Remove"
-                                onPress={() => removeFromShoppingList(item)} // Call removeFromShoppingList
-                            />
+                            <Text style={styles.shoppingListItemText}>{item.name} Qty: {item.quantity}</Text>
+                            <TouchableOpacity
+                                onPress={() => removeFromShoppingList(item)}
+                                style={styles.removeButton}
+                            >
+                                <Text style={styles.removeButtonText}>Remove</Text>
+                            </TouchableOpacity>
                         </View>
                     )}
                     keyExtractor={(item, index) => index.toString()}
@@ -182,35 +186,52 @@ const ShoppingListView = ( {navigation}) => {
             )}
 
 
-    <Text>Search Results</Text>
+            <Text style={styles.listTitles}>Search Results</Text>
             {searchResults && searchResults.results && searchResults.results.length > 0 ? (
                 <FlatList
                     data={searchResults.results}
                     renderItem={({ item }) => (
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Image
-                                source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }}
-                                style={{ width: 50, height: 50, marginRight: 10 }}
-                            />
-                            <Text>{item.name}</Text>
-                            <TextInput
-                                style={{ height: 40, width: 60, borderColor: 'gray', borderWidth: 1, marginLeft: 10 }}
-                                keyboardType="numeric"
-                                placeholder="Qty"
-                                onChangeText={(text) => {
-                                    const quantity = parseInt(text, 10); // Convert input to number
-                                    item.quantity = quantity; // Update quantity in item object
-                                }}
-                            />
-                            <Button
-                                title="Add"
-                                onPress={() => addToShoppingList(item)}
-                            />
+                        <View style={styles.searchResultItemContainer}>
+                            <View style={styles.ingredientImageAndNameContainer}>
+                                <Image
+                                    source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }}
+                                    style={styles.ingredientImage}
+                                />
+                                <Text style={styles.ingredientName}>{item.name}</Text>
+                            </View>
+                            <View style={styles.ingredientQuantityAndButtonContainer}>
+                                <TextInput
+                                    style={styles.quantityBox}
+                                    keyboardType="numeric"
+                                    placeholder="Qty"
+                                    value={quantities[item.id] || ''}
+                                    onChangeText={(text) => {
+                                        const newQuantities = { ...quantities, [item.id]: text };
+                                        setQuantities(newQuantities);
+                                    }}
+                                />
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        if (quantities[item.id]) {
+                                            const quantity = parseInt(quantities[item.id], 10);
+                                            addToShoppingList({ ...item, quantity });
+                                            const newQuantities = { ...quantities };
+                                            delete newQuantities[item.id]; // Remove the quantity after adding to the shopping list
+                                            setQuantities(newQuantities);
+                                        }
+                                    }}
+                                    style={[styles.addButton, !quantities[item.id] && styles.disabledButton]}
+                                    disabled={!quantities[item.id]}
+                                >
+                                    <Text style={styles.addButtonText}>Add</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     )}
                     keyExtractor={(item, index) => index.toString()}
                 />
-                    ) : (
+
+            ) : (
                 <Text>Search List is empty</Text>
             )}
         </View>
@@ -218,6 +239,7 @@ const ShoppingListView = ( {navigation}) => {
 };
 
 const styles = StyleSheet.create({
+
     container: {
         flex: 1, // Full width by default
         backgroundColor: '#f2f2f2',
@@ -254,7 +276,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginLeft: '18%', // Pushes the headerText to the center
         marginRight: 'auto',
-        headerText: 5,
+        marginBottom: 5,
     },
     backgroundDrawer: {
         position: 'absolute',
@@ -306,6 +328,94 @@ const styles = StyleSheet.create({
     imageContainer: {
         alignItems: 'center',
         margin: 10,
+    },
+    listTitles: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginTop: 20,
+        marginBottom: 10,
+        marginLeft:5,
+    },
+    searchBar: {
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginBottom: 10,
+        paddingHorizontal: 10,
+    },
+    shoppingListItemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between', // Add this line to push the button to the right
+        borderBottomWidth: 5,
+        borderColor: '#f2f2f2',
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        backgroundColor: "white",
+        borderRadius: 20,
+    },
+    ingredientImage: {
+        width: 50,
+        height: 50,
+        marginRight: 10,
+        borderRadius: 8,
+        borderWidth: 1, // Add border width
+        borderColor: '#000', // Add border color
+    },
+    shoppingListItemText: {
+        flex: 1,
+    },
+    removeButton: {
+        backgroundColor: 'purple',
+        color: '#fff',
+        paddingVertical: 15,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+    },
+    addButton: {
+        backgroundColor: 'purple',
+        color: '#fff',
+        paddingVertical: 15,
+        paddingHorizontal: 15,
+        borderRadius: 5,
+    },
+    removeButtonText:{
+        color: '#FFFFFF',
+    },
+    addButtonText:{
+        color: '#FFFFFF',
+    },
+    searchResultItemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderBottomWidth: 5,
+        borderColor: '#f2f2f2',
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        backgroundColor: "white",
+        borderRadius: 20,
+    },
+    ingredientImageAndNameContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    ingredientQuantityAndButtonContainer:{
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    ingredientName: {
+        fontSize: 16,
+        marginRight: 10,
+    },
+    quantityBox: {
+        height: 45,
+        width: 45,
+        borderColor: 'gray',
+        borderWidth: 1,
+        marginRight: 10,
+        borderRadius: 8,
+
     },
 });
 

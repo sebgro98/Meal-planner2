@@ -11,7 +11,7 @@ import {
     Modal,
     FlatList,
     TextInput,
-    PanResponder, Animated,
+    PanResponder, Animated, TouchableOpacity,
 } from 'react-native';
 import {Card, Paragraph, Portal, Provider, Title, Button} from "react-native-paper";
 
@@ -24,6 +24,11 @@ const MealView = ({route, navigation}) => {
     const [ingredientsData, setIngredientsData] = useState([]);
     const [mealDetails, setMealDetails] = useState({});
     const [isFavorite, setIsFavorite] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+    const toggleDrawer = () => {
+        setIsDrawerOpen(!isDrawerOpen);
+    };
 
     useEffect(() => {
         setIsFavorite(presenter.isIDIncluded(mealDetails.id));
@@ -128,114 +133,268 @@ const MealView = ({route, navigation}) => {
         console.log("adding ingredient: ", id, "amount: ", amount);
     }
 
+    const renderHeader = () => (
+        <View style={styles.header}>
+            <TouchableOpacity style={styles.menuButton} onPress={toggleDrawer}>
+                <View style={styles.hamburgerIcon}>
+                    <View style={styles.hamburgerLine}></View>
+                    <View style={styles.hamburgerLine}></View>
+                    <View style={styles.hamburgerLine}></View>
+                </View>
+            </TouchableOpacity>
+            <Text style={styles.headerText}>Meal Planner</Text>
+        </View>
+    );
+
+    const renderSideMenu = () => (
+        <React.Fragment>
+            {isDrawerOpen && (
+                <TouchableWithoutFeedback onPress={() => setIsDrawerOpen(false)}>
+                    <View style={styles.backgroundDrawer}></View>
+                </TouchableWithoutFeedback>
+            )}
+            <View style={[styles.drawer, isDrawerOpen ? styles.drawerOpen : styles.drawerClosed]}>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => {
+                        setIsDrawerOpen(false);
+                    }}
+                >
+                    <View style={styles.drawerItemContent}>
+                        <Text style={styles.closeMenu}>X</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => {
+                        setIsDrawerOpen(false);
+                        navigation.navigate('Home');
+                    }}
+                >
+                    <View style={styles.drawerItemContent}>
+                        <Image source={require('../../assets/home.png')} style={styles.drawerItemImage}/>
+                        <Text style={styles.menuText}>Home</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => {
+                        setIsDrawerOpen(false);
+                        navigation.navigate('Favorites');
+                    }}
+                >
+                    <View style={styles.drawerItemContent}>
+                        <Image source={require('../../assets/favorite.png')} style={styles.drawerItemImage}/>
+                        <Text style={styles.menuText}>Favorites</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => {
+                        setIsDrawerOpen(false);
+                        navigation.navigate('ShoppingList');
+                    }}
+                >
+                    <View style={styles.drawerItemContent}>
+                        <Image source={require('../../assets/shopping-list.png')} style={styles.drawerItemImage}/>
+                        <Text>Shopping List</Text>
+                    </View>
+                </TouchableOpacity>
+                {/* Add more navigation links here */}
+            </View>
+        </React.Fragment>
+    );
+
     return ( mealDetails.extendedIngredients &&
-        <Provider>
-            <Animated.View
-                style={[styles.container, {transform: [{translateX: swipeAnim}]}]} {...panResponder.panHandlers}>
-                <ScrollView style={styles.container}>
-                    <View style={styles.imageContainer}>
-                        <Image source={{uri: mealDetails.image}} style={styles.mealImage}/>
-                        <Text style={styles.title}>{mealDetails.title}</Text>
-                    </View>
+                <View style={styles.container}>
+                    {renderHeader()}
+                    {isDrawerOpen && renderSideMenu()}
+                    <ScrollView style={styles.scrollContainer}>
+                        <View style={styles.imageContainer}>
+                            <Image source={{uri: mealDetails.image}} style={styles.mealImage}/>
+                            <Text style={styles.title}>{mealDetails.title}</Text>
+                        </View>
 
-                    {/* Ingredients */}
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Ingredients</Text>
-                        {ingredientsData.map((ingredient, index) => (
-                            <Text key={index} style={styles.paragraph}>
-                                {ingredient.amount} {ingredient.unit} {ingredient.name}
-                            </Text>
-                        ))}
-                    </View>
+                        {/* Ingredients */}
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Ingredients</Text>
+                            {ingredientsData.map((ingredient, index) => (
+                                <Text key={index} style={styles.paragraph}>
+                                    {ingredient.amount} {ingredient.unit} {ingredient.name}
+                                </Text>
+                            ))}
+                        </View>
 
-                    {/* Nutritional Information */}
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Nutritional Information</Text>
-                        <Text style={styles.paragraph}>Cook Time: {mealDetails.readyInMinutes} minutes</Text>
-                        <Text style={styles.paragraph}>Health score: {mealDetails.healthScore}/100</Text>
-                        <Text style={styles.paragraph}>Calories: {mealDetails.calories}</Text>
-                        {mealDetails.extendedIngredients.map((ingredient, index) => (
-                            <Text key={index} style={styles.paragraph}>
-                                {ingredient.measures.metric.amount} {ingredient.measures.metric.unitShort} {ingredient.name}
-                            </Text>
-                        ))}
-                        <Text style={styles.paragraph}>Carbs: {mealDetails.carbs}</Text>
-                        <Text style={styles.paragraph}>Protein: {mealDetails.protein}</Text>
-                        <Text style={styles.paragraph}>Fat: {mealDetails.fat}</Text>
-                        <Text style={styles.paragraph}>Portions: {mealDetails.servings}</Text>
-                    </View>
+                        {/* Nutritional Information */}
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Nutritional Information</Text>
+                            <Text style={styles.paragraph}>Cook Time: {mealDetails.readyInMinutes} minutes</Text>
+                            <Text style={styles.paragraph}>Health score: {mealDetails.healthScore}/100</Text>
+                            <Text style={styles.paragraph}>Calories: {mealDetails.calories}</Text>
+                            {mealDetails.extendedIngredients.map((ingredient, index) => (
+                                <Text key={index} style={styles.paragraph}>
+                                    {ingredient.measures.metric.amount} {ingredient.measures.metric.unitShort} {ingredient.name}
+                                </Text>
+                            ))}
+                            <Text style={styles.paragraph}>Carbs: {mealDetails.carbs}</Text>
+                            <Text style={styles.paragraph}>Protein: {mealDetails.protein}</Text>
+                            <Text style={styles.paragraph}>Fat: {mealDetails.fat}</Text>
+                            <Text style={styles.paragraph}>Portions: {mealDetails.servings}</Text>
+                        </View>
 
-                    {/* Steps */}
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Steps</Text>
-                        {mealDetails.steps.map((step, index) => (
-                            <Text key={index} style={styles.stepParagraph}>
-                                {step.number}. {step.step}
-                            </Text>
-                        ))}
-                    </View>
+                        {/* Steps */}
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>Steps</Text>
+                            {mealDetails.steps.map((step, index) => (
+                                <Text key={index} style={styles.stepParagraph}>
+                                    {step.number}. {step.step}
+                                </Text>
+                            ))}
+                        </View>
 
-                    {/* Toggle between "Add to Favorites" and "Remove from Favorites" */}
-                    <Button mode="contained" onPress={toggleFavorite} style={styles.button}>
-                        {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-                    </Button>
+                        {/* Toggle between "Add to Favorites" and "Remove from Favorites" */}
+                        <Button mode="contained" onPress={toggleFavorite} style={styles.button}>
+                            {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+                        </Button>
 
-                    <Button mode="contained" onPress={toggleAddIngredientsVisibility} style={styles.button}>
-                        Add Ingredients to Shopping List
+                        <Button mode="contained" onPress={toggleAddIngredientsVisibility} style={styles.button}>
+                            Add Ingredients to Shopping List
 
-                    </Button>
+                        </Button>
 
-                    <Portal>
-                        <Modal visible={isAddIngredientsVisible} transparent={true} onRequestClose={toggleAddIngredientsVisibility}>
-                            <TouchableWithoutFeedback onPress={toggleAddIngredientsVisibility}>
-                                <View style={styles.modalOverlay}  onClose={toggleAddIngredientsVisibility}>
-                                    <TouchableWithoutFeedback>
-                                        <View style={styles.addIngredientsContainer}>
-                                            <Text style={styles.sectionTitle}>Add ingredients</Text>
-                                            <FlatList
-                                                data={ingredientsData}
-                                                renderItem={({ item: ingredient }) => (
-                                                    <View style={styles.ingredientContainer}>
-                                                        <Text style={styles.ingredientName}>{ingredient.name}</Text>
-                                                        <View style={styles.ingredientContentContainer}>
-                                                            <TextInput
-                                                                style={styles.inputText}
-                                                                placeholder={ingredient.amount.toString()}
-                                                                keyboardType="numeric"
-                                                                onChangeText={(amount) => setIngredientAmount(ingredient.id, Number(amount))}
-                                                                value={ingredient.amount.toString()}
-                                                            />
-                                                            <Text style={styles.unitText}> {ingredient.unit}</Text>
-                                                            <View style={{ alignItems: 'flex-end' }}>
-                                                                <Button mode="contained" onPress={() => {
-                                                                    addIngredient(ingredient.id, ingredient.amount);
-                                                                }} style={styles.addButton}>
-                                                                    <Text style={styles.addButtonText}>Add</Text>
-                                                                </Button>
+                        <Portal>
+                            <Modal visible={isAddIngredientsVisible} transparent={true} onRequestClose={toggleAddIngredientsVisibility}>
+                                <TouchableWithoutFeedback onPress={toggleAddIngredientsVisibility}>
+                                    <View style={styles.modalOverlay}  onClose={toggleAddIngredientsVisibility}>
+                                        <TouchableWithoutFeedback>
+                                            <View style={styles.addIngredientsContainer}>
+                                                <Text style={styles.sectionTitle}>Add ingredients</Text>
+                                                <FlatList
+                                                    data={ingredientsData}
+                                                    renderItem={({ item: ingredient }) => (
+                                                        <View style={styles.ingredientContainer}>
+                                                            <Text style={styles.ingredientName}>{ingredient.name}</Text>
+                                                            <View style={styles.ingredientContentContainer}>
+                                                                <TextInput
+                                                                    style={styles.inputText}
+                                                                    placeholder={ingredient.amount.toString()}
+                                                                    keyboardType="numeric"
+                                                                    onChangeText={(amount) => setIngredientAmount(ingredient.id, Number(amount))}
+                                                                    value={ingredient.amount.toString()}
+                                                                />
+                                                                <Text style={styles.unitText}> {ingredient.unit}</Text>
+                                                                <View style={{ alignItems: 'flex-end' }}>
+                                                                    <Button mode="contained" onPress={() => {
+                                                                        addIngredient(ingredient.id, ingredient.amount);
+                                                                    }} style={styles.addButton}>
+                                                                        <Text style={styles.addButtonText}>Add</Text>
+                                                                    </Button>
+                                                                </View>
                                                             </View>
                                                         </View>
-                                                    </View>
-                                                )}
-                                                keyExtractor={(ingredient) => ingredient.id.toString()}
-                                            />
-                                        </View>
-                                    </TouchableWithoutFeedback>
-                                </View>
-                            </TouchableWithoutFeedback>
-                        </Modal>
-                    </Portal>
-
-                </ScrollView>
-            </Animated.View>
-        </Provider>
+                                                    )}
+                                                    keyExtractor={(ingredient) => ingredient.id.toString()}
+                                                />
+                                            </View>
+                                        </TouchableWithoutFeedback>
+                                    </View>
+                                </TouchableWithoutFeedback>
+                            </Modal>
+                        </Portal>
+                    </ScrollView>
+                </View>
     );
 }
 
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        flex: 1,
+    },
     container: {
         flex: 1,
         backgroundColor: '#FAEBD7',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingTop: 50,
+        paddingBottom: 5,
+        paddingHorizontal: 10,
+        backgroundColor: '#f2f2f2',
+        position: 'sticky',
+        top: 0,
+        zIndex: 1,
+    },
+    menuButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 10,
+    },
+    hamburgerIcon: {
+        width: 35,
+        justifyContent: 'space-around',
+        height: 25, // Height of the entire icon container
+    },
+    hamburgerLine: {
+        height: 3, // Height of each line
+        backgroundColor: 'black',
+        width: '100%',
+    },
+    headerText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 5,
+        marginLeft: '18%', // Pushes the headerText to the center
+        marginRight: 'auto'
+    },
+    backgroundDrawer: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'black',
+        opacity: 0.5,
+        zIndex: 1, // Ensure the overlay is behind the drawer
+    },
+    drawer: {
+        position: 'absolute', // Absolute positioning to float over content
+        top: 0,
+        bottom: 0,
+        width: 250, // Drawer width
+        backgroundColor: '#FFF',
+        padding: 20,
+        paddingTop: 50,
+        zIndex: 2, // Higher z-index to float above content
+    },
+    drawerItemContent: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    drawerItem: {
+        paddingVertical: 15,
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#8A2BE2', // This is a purple color
+    },
+    drawerContainer: {
+        flex: 1, // Take up all space below the header
+        flexDirection: 'row', // Layout drawer and content side by side
+    },
+    drawerOpen: {
+        left: 0, // Show the drawer
+        width: 200, // Smaller drawer width
+    },
+    drawerClosed: {
+        left: -300, // Fully hide the smaller drawer
+    },
+    drawerItemImage: {
+        marginRight: 10,
+    },
+    closeMenu: {
+        fontSize: 30,
     },
     imageContainer: {
         alignItems: 'center',
@@ -271,6 +430,7 @@ const styles = StyleSheet.create({
     },
     button: {
         margin: 10,
+        backgroundColor: '#8A2BE2',
     },
     modalOverlay: {
         flex: 1,
@@ -330,7 +490,7 @@ const styles = StyleSheet.create({
         marginRight: 5,
     },
     addButton: {
-        color: '#fff',
+        backgroundColor: '#8A2BE2',
         fontSize: 10,
     },
     addButtonText: {

@@ -54,18 +54,21 @@ const ShoppingListView = ( {navigation}) => {
         // Check if the ingredient already exists in the shopping list
         const existingIndex = shoppingList.findIndex(item => item.id === ingredient.id);
 
-        // If the ingredient does not exist, add it to the shopping list with quantity 1
+        // Get the quantity specified for the ingredient
+        const quantity = ingredient.quantity || 1; // Default to 1 if quantity is not specified
+
+        // If the ingredient does not exist, add it to the shopping list with the specified quantity
         if (existingIndex === -1) {
             setShoppingList(prevList => {
-                const updatedList = [...prevList, { ...ingredient, quantity: 1 }];
+                const updatedList = [...prevList, { ...ingredient, quantity }];
                 presenter.saveShoppingList(updatedList); // Save updated shopping list
                 return updatedList;
             });
         } else {
-            // If the ingredient already exists, increase its quantity by 1
+            // If the ingredient already exists, increase its quantity by the specified amount
             setShoppingList(prevList => {
                 const updatedList = [...prevList];
-                updatedList[existingIndex].quantity += 1;
+                updatedList[existingIndex].quantity += quantity;
                 presenter.saveShoppingList(updatedList); // Save updated shopping list
                 return updatedList;
             });
@@ -73,7 +76,11 @@ const ShoppingListView = ( {navigation}) => {
     };
 
     const removeFromShoppingList = (ingredient) => {
-        setShoppingList(prevList => prevList.filter(item => item.id !== ingredient.id));
+        setShoppingList(prevList => {
+            const updatedList = prevList.filter(item => item.id !== ingredient.id);
+            presenter.saveShoppingList(updatedList); // Save updated shopping list
+            return updatedList;
+        });
     };
 
     const toggleDrawer = () => {
@@ -174,10 +181,11 @@ const ShoppingListView = ( {navigation}) => {
                 <Text>List is empty</Text>
             )}
 
-            <Text>Search Results</Text>
+
+    <Text>Search Results</Text>
             {searchResults && searchResults.results && searchResults.results.length > 0 ? (
                 <FlatList
-                    data={searchResults.results} // Use search results as data for FlatList
+                    data={searchResults.results}
                     renderItem={({ item }) => (
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image
@@ -185,6 +193,15 @@ const ShoppingListView = ( {navigation}) => {
                                 style={{ width: 50, height: 50, marginRight: 10 }}
                             />
                             <Text>{item.name}</Text>
+                            <TextInput
+                                style={{ height: 40, width: 60, borderColor: 'gray', borderWidth: 1, marginLeft: 10 }}
+                                keyboardType="numeric"
+                                placeholder="Qty"
+                                onChangeText={(text) => {
+                                    const quantity = parseInt(text, 10); // Convert input to number
+                                    item.quantity = quantity; // Update quantity in item object
+                                }}
+                            />
                             <Button
                                 title="Add"
                                 onPress={() => addToShoppingList(item)}
@@ -193,7 +210,7 @@ const ShoppingListView = ( {navigation}) => {
                     )}
                     keyExtractor={(item, index) => index.toString()}
                 />
-            ) : (
+                    ) : (
                 <Text>Search List is empty</Text>
             )}
         </View>

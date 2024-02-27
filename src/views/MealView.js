@@ -45,7 +45,6 @@ const MealView = ({route, navigation}) => {
 
     useEffect(() => {
         if (!mealDetails.extendedIngredients) return;
-        console.log(mealDetails);
         const uniqueIngredientIds = new Set(); // Set to store unique ingredient ids
         const data = mealDetails.extendedIngredients.reduce((accumulator, ingredient) => {
             // Check if the ingredient id is unique

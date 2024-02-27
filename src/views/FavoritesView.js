@@ -11,7 +11,6 @@ const FavoritesView = ({ navigation }) => {
         const fetchFavorites = async () => {
             const favs = await presenter.getFavorites(); // Method to implement in presenter
             setFavorites(favs);
-            console.log("my favs ", favs);
         };
 
         fetchFavorites();

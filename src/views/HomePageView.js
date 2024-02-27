@@ -6,8 +6,7 @@ import {
     FlatList,
     Image,
     StyleSheet,
-    Button,
-    TextInput,
+    TouchableOpacity,
     Modal,
     TouchableWithoutFeedback,
     TouchableOpacity,
@@ -18,11 +17,28 @@ import FilterView from "./FilterView";
 
 const HomePageView = ({ navigation }) => {
     const [recipes, setRecipes] = useState([]);
-    const presenter = new HomePagePresenter(new RecipeModel(), { updateData: setRecipes });
-
+    const [favs, setFavs] = useState([]);
     const [isFilterVisible, setIsFilterVisible] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const drawerRef = React.useRef(null);
+    const presenter = new HomePagePresenter(new RecipeModel(), { updateData: setRecipes, updateFavorites: setFavs });
+
+    useEffect(() => {
+        presenter.fetchData(10);
+
+        const fetchDataAndFavs = async () => {
+            try {
+                const favsData = await presenter.getFavIDs();
+                setFavs(favsData);
+            } catch (error) {
+            }
+        };
+
+        fetchDataAndFavs();
+    }, [favs]);
+
+    const handleUpdateFavorites = (newFavs) => {
+        setFavs(newFavs);
+    };
 
     const toggleDrawer = () => {
         setIsDrawerOpen(!isDrawerOpen);
@@ -32,33 +48,35 @@ const HomePageView = ({ navigation }) => {
         setIsFilterVisible(!isFilterVisible);
     };
 
-    useEffect(() => {
-        presenter.fetchData(10);
-    }, []);
-
     const applyFilters = (filters) => {
+        // Use the presenter to apply filters
         presenter.applyFilters(filters);
     };
 
     const handleRecipePress = (item) => {
         navigation.navigate('MealDetails', { itemId: item.id });
-        console.log('Selected Recipe:', item);
     };
 
     const getMoreRecepi = (num) => {
         presenter.fetchData(num);
     };
 
-    const renderRecipe = ({ item }) => (
-        <View style={styles.recipeItem}>
-            <TouchableOpacity onPress={() => handleRecipePress(item)}>
-                <View>
-                    <Image source={{ uri: item.image }} style={styles.image} />
-                    <Text style={styles.title}>{item.title}</Text>
-                </View>
-            </TouchableOpacity>
-        </View>
-    );
+    const renderRecipe = ({ item }) => {
+        const isFavorite = favs.includes(item.id);
+
+        return (
+            <View style={styles.recipeItem}>
+                <TouchableOpacity onPress={() => handleRecipePress(item)}>
+                    <View>
+                        <Image source={{ uri: item.image }} style={styles.image} />
+                        {/* Check if item.title is causing the issue */}
+                        <Text style={styles.title}>{item.title}</Text>
+                        {isFavorite && <Icon name="star" size={20} color="yellow" />}
+                    </View>
+                </TouchableOpacity>
+            </View>
+        );
+    };
 
     const renderHeader = () => (
         <View style={styles.header}>
@@ -216,6 +234,19 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         backgroundColor: '#e0e0e0',
     },
+const styles = StyleSheet.create({
+        container: {
+            flex: 1, // Full width by default
+            backgroundColor: '#f2f2f2',
+        },
+        scrollContainer: {
+            flex: 1,
+        },
+        viewMoreContainer: {
+            alignItems: 'center',
+            paddingVertical: 10,
+            backgroundColor: '#e0e0e0',
+        },
 
     viewMoreText: {
         fontSize: 16,
@@ -273,12 +304,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
     },
-    drawerItem: {
-        paddingVertical: 15,
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#8A2BE2', // This is a purple color
-    },
+        drawerItem: {
+            paddingVertical: 15,
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: '#8A2BE2', // This is a purple color
+        },
     mainContent: {
         flex: 1,
         marginLeft: 0, // Default state with drawer closed
@@ -320,7 +351,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 5,
+        marginBottom: 20,
     },
     horizontalContainer: {
         flexDirection: 'row',

@@ -2,7 +2,6 @@ class HomePagePresenter {
     constructor(model, view) {
         this.model = model;
         this.view = view;
-
     }
 
     // Function to handle data fetching and updating the view
@@ -45,6 +44,9 @@ class HomePagePresenter {
         return this.model.isIDIncluded(mealID);
     }
 
+    getFavIDs(){
+        return this.model.getFavs();
+    }
 
 
     async getFavorites() {

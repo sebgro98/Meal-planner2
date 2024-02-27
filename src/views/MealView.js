@@ -17,7 +17,6 @@ import {Portal, Button} from "react-native-paper";
 
 const MealView = ({route, navigation}) => {
     const mealId = route.params?.itemId;
-    const [shoppingList, setShoppingList] = useState([]);
     const presenter = new HomePagePresenter(new RecipeModel());
     const [favoriteMeals, setFavoriteMeals] = useState([]);
     const [isAddIngredientsVisible, setisAddIngredientsVisible] = useState(false);
@@ -25,6 +24,7 @@ const MealView = ({route, navigation}) => {
     const [mealDetails, setMealDetails] = useState({});
     const [isFavorite, setIsFavorite] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [shoppingList, setShoppingList] = useState([]);
 
     const toggleDrawer = () => {
         setIsDrawerOpen(!isDrawerOpen);
@@ -44,6 +44,16 @@ const MealView = ({route, navigation}) => {
     }, [mealDetails.id]);
 
     useEffect(() => {
+        const loadShoppingList = async () => {
+            const temp = await presenter.loadShoppingList(); // Method to implement in presenter
+            setShoppingList(temp);
+        };
+
+        loadShoppingList();
+    }, []);
+
+
+    useEffect(() => {
         if (!mealDetails.extendedIngredients) return;
         const uniqueIngredientIds = new Set(); // Set to store unique ingredient ids
         const data = mealDetails.extendedIngredients.reduce((accumulator, ingredient) => {
@@ -54,9 +64,11 @@ const MealView = ({route, navigation}) => {
                 // Add unique ingredient to the data array
                 accumulator.push({
                     id: ingredient.id,
+                    image: ingredient.image,
                     name: ingredient.name,
-                    amount: ingredient.measures.metric.amount,
+                    quantity: ingredient.measures.metric.amount,
                     unit: ingredient.measures.metric.unitShort,
+
                 });
             }
 
@@ -90,16 +102,33 @@ const MealView = ({route, navigation}) => {
         setisAddIngredientsVisible(!isAddIngredientsVisible);
     }
 
-    function setIngredientAmount(id, amount) {
+    function setIngredientQuantity(id, quantity) {
         const data = ingredientsData.map((ingredient) => {
-            if (ingredient.id === id) return {...ingredient, amount: amount};
+            if (ingredient.id === id) return {...ingredient, quantity: quantity};
             return ingredient;
         });
         setIngredientsData(data);
     }
 
-    function addIngredient(id, amount) {
-        console.log("adding ingredient: ", id, "amount: ", amount);
+    function addIngredient(ingredient) {
+        const existingIndex = shoppingList.findIndex(item => item.id === ingredient.id);
+
+        // If the ingredient does not exist, add it to the shopping list with the specified quantity
+        if (existingIndex === -1) {
+            setShoppingList(prevList => {
+                const updatedList = [...prevList, { ...ingredient }];
+                presenter.saveShoppingList(updatedList); // Save updated shopping list
+                return updatedList;
+            });
+        } else {
+            // If the ingredient already exists, increase its quantity by the specified amount
+            setShoppingList(prevList => {
+                const updatedList = [...prevList];
+                updatedList[existingIndex].quantity += ingredient.quantity;
+                presenter.saveShoppingList(updatedList); // Save updated shopping list
+                return updatedList;
+            });
+        }
         alert('Ingredient added to shopping list!');
     }
 
@@ -190,7 +219,7 @@ const MealView = ({route, navigation}) => {
                             <Text style={styles.sectionTitle}>Ingredients</Text>
                             {ingredientsData.map((ingredient, index) => (
                                 <Text key={index} style={styles.paragraph}>
-                                    {ingredient.amount} {ingredient.unit} {ingredient.name}
+                                    {ingredient.quantity} {ingredient.unit} {ingredient.name}
                                 </Text>
                             ))}
                         </View>
@@ -252,15 +281,15 @@ const MealView = ({route, navigation}) => {
                                                             <View style={styles.ingredientContentContainer}>
                                                                 <TextInput
                                                                     style={styles.inputText}
-                                                                    placeholder={ingredient.amount.toString()}
+                                                                    placeholder={ingredient.quantity.toString()}
                                                                     keyboardType="numeric"
-                                                                    onChangeText={(amount) => setIngredientAmount(ingredient.id, Number(amount))}
-                                                                    value={ingredient.amount.toString()}
+                                                                    onChangeText={(quantity) => setIngredientQuantity(ingredient.id, Number(quantity))}
+                                                                    value={ingredient.quantity.toString()}
                                                                 />
                                                                 <Text style={styles.unitText}> {ingredient.unit}</Text>
                                                                 <View style={{ alignItems: 'flex-end' }}>
                                                                     <Button mode="contained" onPress={() => {
-                                                                        addIngredient(ingredient.id, ingredient.amount);
+                                                                        addIngredient(ingredient);
                                                                     }} style={styles.addButton}>
                                                                         <Text style={styles.addButtonText}>Add</Text>
                                                                     </Button>

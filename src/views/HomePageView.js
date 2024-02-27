@@ -9,7 +9,6 @@ import {
     TouchableOpacity,
     Modal,
     TouchableWithoutFeedback,
-    TouchableOpacity,
 } from 'react-native';
 import HomePagePresenter from '../presenters/HomePagePresenter';
 import RecipeModel from '../models/RecipeModel';
@@ -188,22 +187,29 @@ const HomePageView = ({ navigation }) => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
-
-    drawerItemContent: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-
-    drawerItemImage: {
-        marginRight: 10,
-    },
-
     container: {
         flex: 1, // Full width by default
         backgroundColor: '#f2f2f2',
     },
+    drawerItemContent: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    drawerItemImage: {
+        marginRight: 10,
+    },
+    backgroundDrawer: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'black',
+        opacity: 0.5,
+        zIndex: 1, // Ensure the overlay is behind the drawer
+    },
+
     sideMenu: {
         position: 'absolute',
         top: 0,
@@ -215,38 +221,12 @@ const styles = StyleSheet.create({
         transitionProperty: 'transform',
         transitionDuration: 300,
     },
-    scrollContainer: {
-        flex: 1,
-    },
 
-    backgroundDrawer: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'black',
-        opacity: 0.5,
-        zIndex: 1, // Ensure the overlay is behind the drawer
-    },
     viewMoreContainer: {
         alignItems: 'center',
         paddingVertical: 10,
         backgroundColor: '#e0e0e0',
     },
-const styles = StyleSheet.create({
-        container: {
-            flex: 1, // Full width by default
-            backgroundColor: '#f2f2f2',
-        },
-        scrollContainer: {
-            flex: 1,
-        },
-        viewMoreContainer: {
-            alignItems: 'center',
-            paddingVertical: 10,
-            backgroundColor: '#e0e0e0',
-        },
 
     viewMoreText: {
         fontSize: 16,
@@ -351,7 +331,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 20,
+        marginBottom: 5,
     },
     horizontalContainer: {
         flexDirection: 'row',
@@ -379,6 +359,10 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         backgroundColor: '#fff',
         borderRadius: 10,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
         width: '48%',
         marginRight: '2%',
     },

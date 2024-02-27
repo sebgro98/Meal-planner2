@@ -109,13 +109,50 @@ const HomePageView = ({ navigation }) => {
     );
 
     const renderSideMenu = () => (
-        <View style={styles.sideMenu}>
-            <TouchableOpacity onPress={toggleDrawer}>
-                <Text>Close Drawer</Text>
-            </TouchableOpacity>
-            <Text>Side Menu</Text>
-            {/* Add more items as needed */}
-        </View>
+        <React.Fragment>
+            {isDrawerOpen && (
+                <TouchableWithoutFeedback onPress={() => setIsDrawerOpen(false)}>
+                    <View style={styles.backgroundDrawer}></View>
+                </TouchableWithoutFeedback>
+            )}
+            <View style={[styles.drawer, isDrawerOpen ? styles.drawerOpen : styles.drawerClosed]}>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => {
+                        setIsDrawerOpen(false);
+                    }}
+                >
+                    <View style={styles.drawerItemContent}>
+                        <Text style={styles.closeMenu}>X</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => {
+                        setIsDrawerOpen(false);
+                        navigation.navigate('Favorites');
+                    }}
+                >
+                    <View style={styles.drawerItemContent}>
+                        <Image source={require('../../assets/favorite.png')} style={styles.drawerItemImage}/>
+                        <Text>Favorites</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.drawerItem}
+                    onPress={() => {
+                        setIsDrawerOpen(false);
+                        navigation.navigate('ShoppingList');
+                    }}
+                >
+                    <View style={styles.drawerItemContent}>
+                        <Image source={require('../../assets/shopping-list.png')} style={styles.drawerItemImage}/>
+                        <Text>Shopping List</Text>
+                    </View>
+                </TouchableOpacity>
+                {/* Add more navigation links here */}
+            </View>
+        </React.Fragment>
     );
 
     return (
@@ -125,7 +162,6 @@ const HomePageView = ({ navigation }) => {
             <FlatList
                 style={{ flex: 1 }}
                 ListFooterComponent={renderFooter}
-                stickyHeaderIndices={[0]}
                 data={recipes.results}
                 renderItem={renderRecipe}
                 keyExtractor={(item) => item.id.toString()}
@@ -136,6 +172,16 @@ const HomePageView = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+
+    drawerItemContent: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+
+    drawerItemImage: {
+        marginRight: 10,
+    },
+
     container: {
         flex: 1, // Full width by default
         backgroundColor: '#f2f2f2',
@@ -145,7 +191,7 @@ const styles = StyleSheet.create({
         top: 0,
         width: 250,
         height: '100%',
-        backgroundColor: '#FFF',
+        backgroundColor: '#FAEBD7',
         padding: 20,
         zIndex: 2,
         transitionProperty: 'transform',
@@ -153,6 +199,17 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         flex: 1,
+    },
+
+    backgroundDrawer: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'black',
+        opacity: 0.5,
+        zIndex: 1, // Ensure the overlay is behind the drawer
     },
     viewMoreContainer: {
         alignItems: 'center',
@@ -185,6 +242,7 @@ const styles = StyleSheet.create({
         width: 250, // Drawer width
         backgroundColor: '#FFF',
         padding: 20,
+        paddingTop: 50,
         zIndex: 2, // Higher z-index to float above content
     },
     drawerOpen: {
@@ -328,6 +386,10 @@ const styles = StyleSheet.create({
         width: '80%',
         alignSelf: 'center',
     },
+    closeMenu: {
+        fontSize: 30,
+    },
+
 });
 
 export default HomePageView;

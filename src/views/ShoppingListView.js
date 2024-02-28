@@ -57,7 +57,7 @@ const ShoppingListView = ( {navigation}) => {
         const existingIndex = shoppingList.findIndex(item => item.id === ingredient.id);
 
         // Get the quantity specified for the ingredient
-        const quantity = ingredient.quantity || 1; // Default to 1 if quantity is not specified
+        const quantity = ingredient.quantity || '1'; // Default to 1 if quantity is not specified
 
         // If the ingredient does not exist, add it to the shopping list with the specified quantity
         if (existingIndex === -1) {
@@ -70,7 +70,7 @@ const ShoppingListView = ( {navigation}) => {
             // If the ingredient already exists, increase its quantity by the specified amount
             setShoppingList(prevList => {
                 const updatedList = [...prevList];
-                updatedList[existingIndex].quantity += quantity;
+                updatedList[existingIndex].quantity = (parseFloat(ingredient.quantity) + parseFloat(updatedList[existingIndex].quantity)).toString();
                 presenter.saveShoppingList(updatedList); // Save updated shopping list
                 return updatedList;
             });
@@ -88,6 +88,17 @@ const ShoppingListView = ( {navigation}) => {
     const toggleDrawer = () => {
         setIsDrawerOpen(!isDrawerOpen);
     };
+
+    function updateIngredient(ingredient, quantity) {
+        const newQuantity = quantity.replace(',','.');
+        const existingIndex = shoppingList.findIndex(item => item.id === ingredient.id);
+        setShoppingList(prevList => {
+            const updatedList = [...prevList];
+            updatedList[existingIndex].quantity = newQuantity;
+            presenter.saveShoppingList(updatedList); // Save updated shopping list
+            return updatedList;
+        });
+    }
 
     const renderHeader = () => (
         <View style={styles.header}>
@@ -170,7 +181,14 @@ const ShoppingListView = ( {navigation}) => {
                                 source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }}
                                 style={styles.ingredientImage}
                             />
-                            <Text style={styles.shoppingListItemText}>{item.name} Qty: {item.quantity}</Text>
+                            <Text style={styles.shoppingListItemText}>{item.name}</Text>
+                            <TextInput
+                                style={styles.quantityBox}
+                                keyboardType="numeric"
+                                value={item.quantity.toString()}
+                                placeholder={item.quantity.toString()}
+                                onChangeText={(quantity) => updateIngredient(item, quantity)}
+                            />
                             <TouchableOpacity
                                 onPress={() => removeFromShoppingList(item)}
                                 style={styles.removeButton}
@@ -206,14 +224,14 @@ const ShoppingListView = ( {navigation}) => {
                                     placeholder="Qty"
                                     value={quantities[item.id] || ''}
                                     onChangeText={(text) => {
-                                        const newQuantities = { ...quantities, [item.id]: text };
+                                        const newQuantities = { ...quantities, [item.id]: text.replace(',', '.') };
                                         setQuantities(newQuantities);
                                     }}
                                 />
                                 <TouchableOpacity
                                     onPress={() => {
                                         if (quantities[item.id]) {
-                                            const quantity = parseInt(quantities[item.id], 10);
+                                            const quantity = quantities[item.id];
                                             addToShoppingList({ ...item, quantity });
                                             const newQuantities = { ...quantities };
                                             delete newQuantities[item.id]; // Remove the quantity after adding to the shopping list
@@ -410,10 +428,11 @@ const styles = StyleSheet.create({
     },
     quantityBox: {
         height: 45,
-        width: 45,
+        width: 65,
         borderColor: 'gray',
         borderWidth: 1,
-        marginRight: 10,
+        paddingLeft: 5,
+        marginRight: 5,
         borderRadius: 8,
 
     },

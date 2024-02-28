@@ -103,8 +103,10 @@ const MealView = ({route, navigation}) => {
     }
 
     function setIngredientQuantity(id, quantity) {
+        const newQuantity = quantity.replace(',', '.');
+        console.log(newQuantity)
         const data = ingredientsData.map((ingredient) => {
-            if (ingredient.id === id) return {...ingredient, quantity: quantity};
+            if (ingredient.id === id) return {...ingredient, quantity: newQuantity};
             return ingredient;
         });
         setIngredientsData(data);
@@ -124,7 +126,7 @@ const MealView = ({route, navigation}) => {
             // If the ingredient already exists, increase its quantity by the specified amount
             setShoppingList(prevList => {
                 const updatedList = [...prevList];
-                updatedList[existingIndex].quantity += ingredient.quantity;
+                updatedList[existingIndex].quantity = (parseFloat(ingredient.quantity) + parseFloat(updatedList[existingIndex].quantity)).toString();
                 presenter.saveShoppingList(updatedList); // Save updated shopping list
                 return updatedList;
             });
@@ -282,8 +284,9 @@ const MealView = ({route, navigation}) => {
                                                                 <TextInput
                                                                     style={styles.inputText}
                                                                     placeholder={ingredient.quantity.toString()}
-                                                                    keyboardType="numeric"
-                                                                    onChangeText={(quantity) => setIngredientQuantity(ingredient.id, Number(quantity))}
+                                                                    keyboardType="decimal-pad"
+                                                                    locale="en-US"
+                                                                    onChangeText={(quantity) => setIngredientQuantity(ingredient.id,quantity)}
                                                                     value={ingredient.quantity.toString()}
                                                                 />
                                                                 <Text style={styles.unitText}> {ingredient.unit}</Text>

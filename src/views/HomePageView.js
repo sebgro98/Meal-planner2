@@ -47,9 +47,9 @@ const HomePageView = ({ navigation }) => {
         setIsFilterVisible(!isFilterVisible);
     };
 
-    const applyFilters = (filters) => {
-        // Use the presenter to apply filters
-        presenter.applyFilters(filters);
+    const applyFilters = (selectedFilters, maxCalories, prepTime) => {
+        // Use the presenter to apply filters with separate arguments
+        presenter.applyFilters(selectedFilters, maxCalories, prepTime);
     };
 
     const handleRecipePress = (item) => {

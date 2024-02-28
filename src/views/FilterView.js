@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput, FlatList, TouchableOpacity, Text } from 'react-native';
 import { Button } from 'react-native-paper';
+import Slider from "@react-native-community/slider";
 const FilterView = ({ onApplyFilters }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [selectedFilters, setSelectedFilters] = useState([]);
+    const [maxCalories, setMaxCalories] = useState(500); // Default value
+    const [prepTime, setPrepTime] = useState(30); // Default value in minutes
 
     const addFilter = (item) => {
         if (!selectedFilters.includes(item)) {
@@ -18,15 +21,14 @@ const FilterView = ({ onApplyFilters }) => {
     };
 
     const applyFilters = () => {
-        let filtersToApply = selectedFilters;
-        if (searchTerm && !selectedFilters.includes(searchTerm)) {
-            filtersToApply = [...selectedFilters, searchTerm];
-        }
-        console.log("Filters to apply:", filtersToApply);
-        onApplyFilters(filtersToApply);
+        // Only pass the selected text filters
+        const textFilters = searchTerm ? [...selectedFilters, searchTerm] : selectedFilters;
+        console.log("Filters to apply:", textFilters);
+        onApplyFilters(textFilters, maxCalories, prepTime);
         setSearchTerm(''); // Clear the search term
         setSelectedFilters([]); // Optionally, clear the filters after applying
     };
+
 
     // Render function or component for search suggestions
     const renderSearchSuggestions = () => {
@@ -41,12 +43,34 @@ const FilterView = ({ onApplyFilters }) => {
 
     return (
         <View style={styles.container}>
+
+
             <TextInput
                 style={styles.searchInput}
                 onChangeText={setSearchTerm}
                 value={searchTerm}
                 placeholder="Search for recipes..."
             />
+
+            <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={1500}
+                step={50}
+                value={maxCalories}
+                onValueChange={setMaxCalories}
+            />
+            <Text>Max Calories: {maxCalories} kcal</Text>
+
+            <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={120}
+                step={5}
+                value={prepTime}
+                onValueChange={setPrepTime}
+            />
+            <Text>Prep Time: {prepTime} minutes</Text>
 
             {renderSearchSuggestions()}
 

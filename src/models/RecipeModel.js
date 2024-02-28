@@ -40,9 +40,10 @@ class RecipeModel {
         return details;
     }
 
-    async getFilteredRecipes(filters) {
-        return await MealAPI.getFilteredRecipes(filters);
+    async getFilteredRecipes(selectedFilters, maxCalories, prepTime) {
+        return await MealAPI.getFilteredRecipes(selectedFilters, maxCalories, prepTime);
     }
+
 
     async setShoppingList(shoppingList){
         RecipeModel.shoppingList = shoppingList;

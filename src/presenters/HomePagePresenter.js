@@ -15,10 +15,13 @@ class HomePagePresenter {
         }
     }
 
-    async applyFilters(filters) {
+    async applyFilters(selectedFilters, maxCalories, prepTime) {
         try {
-            console.log("filters", filters)
-            const filteredData = await this.model.getFilteredRecipes(filters);
+            console.log("selectedFilters", selectedFilters);
+            console.log("maxCalories", maxCalories);
+            console.log("prepTime", prepTime);
+
+            const filteredData = await this.model.getFilteredRecipes(selectedFilters, maxCalories, prepTime);
             this.view.updateData(filteredData);
             console.log("filteredData", filteredData);
         } catch (error) {

@@ -81,11 +81,21 @@ const MealAPI = {
         }
     },
 
-    getFilteredRecipes: async (filters) => {
+    getFilteredRecipes: async (filters, maxCalories, prepTime) => {
         try {
             let queryTerms = filters.join(','); // Join the filters with commas
 
             let apiUrl = `${BASE_URL}/recipes/complexSearch?query=${queryTerms}&apiKey=${apiKey}`;
+
+
+            if (maxCalories) {
+                apiUrl += `&maxCalories=${maxCalories}`;
+            }
+
+            // Append prepTime to the URL if it's provided and not empty
+            if (prepTime) {
+                apiUrl += `&maxReadyTime=${prepTime}`;
+            }
 
             // You can add additional parameters here if needed
             // For example, if you have other specific filters like maxCalories, you can append them to the URL

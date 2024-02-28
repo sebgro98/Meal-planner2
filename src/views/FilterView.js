@@ -52,26 +52,6 @@ const FilterView = ({ onApplyFilters }) => {
                 placeholder="Search for recipes..."
             />
 
-            <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={1500}
-                step={50}
-                value={maxCalories}
-                onValueChange={setMaxCalories}
-            />
-            <Text>Max Calories: {maxCalories} kcal</Text>
-
-            <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={120}
-                step={5}
-                value={prepTime}
-                onValueChange={setPrepTime}
-            />
-            <Text>Prep Time: {prepTime} minutes</Text>
-
             {renderSearchSuggestions()}
 
             <View style={styles.filterContainer}>
@@ -85,6 +65,27 @@ const FilterView = ({ onApplyFilters }) => {
                 ))}
             </View>
 
+            <Slider
+
+                minimumValue={0}
+                maximumValue={1500}
+                step={50}
+                value={maxCalories}
+                onValueChange={setMaxCalories}
+            />
+            <Text style={styles.textSlider}>Max Calories: {maxCalories} kcal</Text>
+
+            <Slider
+                style={styles.slider}
+                minimumValue={0}
+                maximumValue={120}
+                step={5}
+                value={prepTime}
+                onValueChange={setPrepTime}
+            />
+            <Text style={styles.textSlider}> Prep Time: {prepTime} minutes</Text>
+
+
             <Button mode="contained" onPress={applyFilters} style={styles.applyButton}>
                 <Text style={styles.applyButtonText}>Apply Filters</Text>
             </Button>
@@ -93,6 +94,10 @@ const FilterView = ({ onApplyFilters }) => {
 };
 
 const styles = StyleSheet.create({
+    textSlider: {
+        marginBottom: 15,
+
+    },
     container: {
         flex: 1,
         padding: 20,
@@ -124,10 +129,12 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         padding: 8,
         marginRight: 10, // Increased spacing
-        marginBottom: 10, // Increased spacing
+
+
     },
     filterText: {
         color: '#fff', // White text for readability
+        marginBottom: 5,
     },
     removeButton: {
         color: '#fff',
@@ -140,6 +147,11 @@ const styles = StyleSheet.create({
     },
     applyButtonText: {
         color: '#fff', // White text for readability
+    },
+    slider: {
+        height: 40,
+        marginVertical: 10,
+
     },
 });
 

@@ -204,54 +204,59 @@ const ShoppingListView = ( {navigation}) => {
             )}
 
 
-            <Text style={styles.listTitles}>Search Results</Text>
-            {searchResults && searchResults.results && searchResults.results.length > 0 ? (
-                <FlatList
-                    data={searchResults.results}
-                    renderItem={({ item }) => (
-                        <View style={styles.searchResultItemContainer}>
-                            <View style={styles.ingredientImageAndNameContainer}>
-                                <Image
-                                    source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }}
-                                    style={styles.ingredientImage}
-                                />
-                                <Text style={styles.ingredientName}>{item.name}</Text>
-                            </View>
-                            <View style={styles.ingredientQuantityAndButtonContainer}>
-                                <TextInput
-                                    style={styles.quantityBox}
-                                    keyboardType="numeric"
-                                    placeholder="Qty"
-                                    value={quantities[item.id] || ''}
-                                    onChangeText={(text) => {
-                                        const newQuantities = { ...quantities, [item.id]: text.replace(',', '.') };
-                                        setQuantities(newQuantities);
-                                    }}
-                                />
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        if (quantities[item.id]) {
-                                            const quantity = quantities[item.id];
-                                            addToShoppingList({ ...item, quantity });
-                                            const newQuantities = { ...quantities };
-                                            delete newQuantities[item.id]; // Remove the quantity after adding to the shopping list
-                                            setQuantities(newQuantities);
-                                        }
-                                    }}
-                                    style={[styles.addButton, !quantities[item.id] && styles.disabledButton]}
-                                    disabled={!quantities[item.id]}
-                                >
-                                    <Text style={styles.addButtonText}>Add</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
-                    keyExtractor={(item, index) => index.toString()}
-                />
-
-            ) : (
-                <Text>Search List is empty</Text>
+            {searchResults && searchResults.results && searchResults.results.length > 0 && (
+                <Text style={styles.listTitles}>Search Results</Text>
             )}
+            <FlatList
+                data={searchResults.results}
+                renderItem={({ item }) => (
+                    <View style={styles.searchResultItemContainer}>
+                        <View style={styles.ingredientImageAndNameContainer}>
+                            <Image
+                                source={{ uri: `https://spoonacular.com/cdn/ingredients_100x100/${item.image}` }}
+                                style={styles.ingredientImage}
+                            />
+                            <Text
+                                style={[
+                                    styles.ingredientName,
+                                    { fontSize: item.name.length > 23 ? 10 : 15 } // Adjust the condition and font sizes as needed
+                                ]}
+                                numberOfLines={1} // Limit the text to a single line
+                            >
+                                {item.name}
+                            </Text>
+                        </View>
+                        <View style={styles.ingredientQuantityAndButtonContainer}>
+                            <TextInput
+                                style={styles.quantityBox}
+                                keyboardType="numeric"
+                                placeholder="Qty"
+                                value={quantities[item.id] || ''}
+                                onChangeText={(text) => {
+                                    const newQuantities = { ...quantities, [item.id]: text.replace(',', '.') };
+                                    setQuantities(newQuantities);
+                                }}
+                            />
+                            <TouchableOpacity
+                                onPress={() => {
+                                    if (quantities[item.id]) {
+                                        const quantity = quantities[item.id];
+                                        addToShoppingList({ ...item, quantity });
+                                        const newQuantities = { ...quantities };
+                                        delete newQuantities[item.id]; // Remove the quantity after adding to the shopping list
+                                        setQuantities(newQuantities);
+                                    }
+                                }}
+                                style={[styles.addButton, !quantities[item.id] && styles.disabledButton]}
+                                disabled={!quantities[item.id]}
+                            >
+                                <Text style={styles.addButtonText}>Add</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+            />
         </View>
     );
 };

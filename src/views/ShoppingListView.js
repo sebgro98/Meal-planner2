@@ -384,14 +384,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     removeButton: {
-        backgroundColor: 'purple',
+        backgroundColor: '#8A2BE2',
         color: '#fff',
         paddingVertical: 15,
         paddingHorizontal: 10,
         borderRadius: 5,
     },
     addButton: {
-        backgroundColor: 'purple',
+        backgroundColor: '#8A2BE2',
         color: '#fff',
         paddingVertical: 15,
         paddingHorizontal: 15,

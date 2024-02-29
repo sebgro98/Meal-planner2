@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: '#FAEBD7',
+        backgroundColor: '#f2f2f2',
     },
     header: {
         flexDirection: 'row',
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     addIngredientsContainer: {
-        backgroundColor: "#FAEBD7",
+        backgroundColor: "#f2f2f2",
         borderRadius: 20,
         padding: 20,
         width: '80%',
